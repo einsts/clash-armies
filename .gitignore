@@ -13,3 +13,5 @@ dist
 copy.sh
 scripts
 coverage
+output.log
+tools/layouts-coc-firebase-adminsdk-fbsvc-df1502a772.json
