@@ -21,3 +21,20 @@
   生产环境请将 --base-url 换成线上域名；加 --log-level DEBUG 可看更详细日志。
   首次回填：用 --since 做一次全量；或用 --init-migration 不回填只立基线。
   后续增量：直接运行（可加 --skip-not-newer），脚本基于 Firestore 标记自动增量。
+
+
+
+
+Fork代码同步方法:
+   # 添加上游（原仓库）
+     git remote add upstream https://github.com/NinjaInShade/clash-armies.git #这一步已经添加则可以忽略
+   # 拉取上游更新
+     git fetch upstream
+   # 合并到你的分支（假设是 master）
+     git checkout master
+     git merge upstream/master
+   # 推送到你的 GitHub 仓库
+     git push origin master
+
+如何查看是否已经添加上游仓库
+  git remote -v
