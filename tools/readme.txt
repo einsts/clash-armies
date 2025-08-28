@@ -38,3 +38,12 @@ Fork代码同步方法:
 
 如何查看是否已经添加上游仓库
   git remote -v
+
+后续同步方法只需要按以下来调用 
+    1.git fetch upstream
+    2.git checkout master
+    3.git merge upstream/master
+    4.git push origin master
+
+
+

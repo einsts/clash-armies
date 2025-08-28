@@ -1,0 +1,292 @@
+nohup: ignoring input
+
+> clash-armies@0.5.5 start
+> npm run start:before && vite dev
+
+
+> clash-armies@0.5.5 start:before
+> docker compose up -d
+
+time="2025-08-13T11:29:15+08:00" level=warning msg="/root/clash-armies/compose.yaml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+ Container clash-armies-db-1  Running
+
+  VITE v6.0.6  ready in 1876 ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: use --host to expose
+[0;90m<11:29:33 AM[0;90m> ⚓ [34m[1mINFO[0m [38;5;134mclash-armies:server  [0;90m>>[0m Running hourly task... [0m
+[0;90m<11:29:33 AM[0;90m> ⚓ [34m[1mINFO[0m [38;5;134mclash-armies:server  [0;90m>>[0m Deleting expired sessions... [0m
+[0;90m<11:29:33 AM[0;90m> ⚓ [34m[1mINFO[0m [38;5;134mclash-armies:server  [0;90m>>[0m Deleted expired sessions in 29ms [0m
+[0;90m<11:29:33 AM[0;90m> ⚓ [34m[1mINFO[0m [38;5;134mclash-armies:notif   [0;90m>>[0m Deleting old notifications... [0m
+[0;90m<11:29:33 AM[0;90m> ⚓ [34m[1mINFO[0m [38;5;134mclash-armies:notif   [0;90m>>[0m Deleted 0 old notifications in 2ms [0m
+[0;90m<11:29:33 AM[0;90m> ⚓ [34m[1mINFO[0m [38;5;134mclash-armies:metrics [0;90m>>[0m Deleting old army metric events... [0m
+[0;90m<11:29:33 AM[0;90m> ⚓ [34m[1mINFO[0m [38;5;134mclash-armies:metrics [0;90m>>[0m Deleted 0 old army metric events in 13ms [0m
+[0;90m<11:29:33 AM[0;90m> ⚓ [34m[1mINFO[0m [38;5;134mclash-armies:server  [0;90m>>[0m Finished hourly task in 46ms [0m
+[0;90m<11:29:33 AM[0;90m> ⚓ [34m[1mINFO[0m [38;5;134mclash-armies:server  [0;90m>>[0m Request: {
+  uuid: '8748d74e-9aa6-4e45-8fd4-20c6d287c7ac',
+  method: 'GET',
+  url: 'http://localhost:5173/admin',
+  userId: 2,
+  username: 'Warrior-2',
+  ip: '127.0.0.1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36'
+} [0m
+[0;90m<11:29:35 AM[0;90m> ⚓ [34m[1mINFO[0m [38;5;134mclash-armies:server  [0;90m>>[0m Request: {
+  uuid: '965473a8-0666-4b47-a5c1-e705f61c9096',
+  method: 'GET',
+  url: 'http://localhost:5173/admin',
+  userId: 2,
+  username: 'Warrior-2',
+  ip: '127.0.0.1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36'
+} [0m
+[0;90m<11:29:36 AM[0;90m> ⚓ [34m[1mINFO[0m [38;5;134mclash-armies:server  [0;90m>>[0m Response: {
+  requestId: '8748d74e-9aa6-4e45-8fd4-20c6d287c7ac',
+  method: 'GET',
+  status: 403,
+  duration: '3802ms'
+} [0m
+[0;90m<11:29:36 AM[0;90m> ⚓ [34m[1mINFO[0m [38;5;134mclash-armies:server  [0;90m>>[0m Response: {
+  requestId: '965473a8-0666-4b47-a5c1-e705f61c9096',
+  method: 'GET',
+  status: 403,
+  duration: '1355ms'
+} [0m
+[0;90m<11:29:36 AM[0;90m> ⚓ [34m[1mINFO[0m [38;5;134mclash-armies:server  [0;90m>>[0m Request: {
+  uuid: '4927963b-67b3-4243-a34e-e31fc494b140',
+  method: 'GET',
+  url: 'http://localhost:5173/admin',
+  userId: 2,
+  username: 'Warrior-2',
+  ip: '127.0.0.1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36'
+} [0m
+[0;90m<11:29:37 AM[0;90m> ⚓ [34m[1mINFO[0m [38;5;134mclash-armies:server  [0;90m>>[0m Response: {
+  requestId: '4927963b-67b3-4243-a34e-e31fc494b140',
+  method: 'GET',
+  status: 403,
+  duration: '276ms'
+} [0m
+[0;90m<11:29:39 AM[0;90m> ⚓ [34m[1mINFO[0m [38;5;134mclash-armies:server  [0;90m>>[0m Request: {
+  uuid: '20c046b5-ebbc-40ad-82a0-9c35399f52fb',
+  method: 'GET',
+  url: 'http://localhost:5173/',
+  userId: 2,
+  username: 'Warrior-2',
+  ip: '127.0.0.1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36'
+} [0m
+[0;90m<11:29:40 AM[0;90m> ⚓ [34m[1mINFO[0m [38;5;134mclash-armies:server  [0;90m>>[0m Response: {
+  requestId: '20c046b5-ebbc-40ad-82a0-9c35399f52fb',
+  method: 'GET',
+  status: 200,
+  duration: '1189ms'
+} [0m
+[0;90m<11:29:40 AM[0;90m> ⚓ [34m[1mINFO[0m [38;5;134mclash-armies:server  [0;90m>>[0m Request: {
+  uuid: 'a8df9409-8462-4c9a-b056-77e82bd8a7c1',
+  method: 'GET',
+  url: 'http://localhost:5173/admin',
+  userId: 2,
+  username: 'Warrior-2',
+  ip: '127.0.0.1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36'
+} [0m
+[0;90m<11:29:40 AM[0;90m> ⚓ [34m[1mINFO[0m [38;5;134mclash-armies:server  [0;90m>>[0m Response: {
+  requestId: 'a8df9409-8462-4c9a-b056-77e82bd8a7c1',
+  method: 'GET',
+  status: 403,
+  duration: '206ms'
+} [0m
+[0;90m<11:29:41 AM[0;90m> ⚓ [34m[1mINFO[0m [38;5;134mclash-armies:server  [0;90m>>[0m Request: {
+  uuid: 'a84470d7-a8ba-4b63-966a-4459f068fbda',
+  method: 'GET',
+  url: 'http://localhost:5173/',
+  userId: 2,
+  username: 'Warrior-2',
+  ip: '127.0.0.1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36'
+} [0m
+[0;90m<11:29:41 AM[0;90m> ⚓ [34m[1mINFO[0m [38;5;134mclash-armies:server  [0;90m>>[0m Response: {
+  requestId: 'a84470d7-a8ba-4b63-966a-4459f068fbda',
+  method: 'GET',
+  status: 200,
+  duration: '218ms'
+} [0m
+[0;90m<11:29:50 AM[0;90m> ⚓ [34m[1mINFO[0m [38;5;134mclash-armies:server  [0;90m>>[0m Request: {
+  uuid: '189c9074-8125-4b08-994c-079d8e9b7bb6',
+  method: 'GET',
+  url: 'http://localhost:5173/admin',
+  userId: 2,
+  username: 'Warrior-2',
+  ip: '127.0.0.1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36'
+} [0m
+[0;90m<11:29:50 AM[0;90m> ⚓ [34m[1mINFO[0m [38;5;134mclash-armies:server  [0;90m>>[0m Response: {
+  requestId: '189c9074-8125-4b08-994c-079d8e9b7bb6',
+  method: 'GET',
+  status: 403,
+  duration: '144ms'
+} [0m
+[0;90m<11:29:51 AM[0;90m> ⚓ [34m[1mINFO[0m [38;5;134mclash-armies:server  [0;90m>>[0m Request: {
+  uuid: 'c9d283b6-9daa-4c17-9717-054cc22bd698',
+  method: 'GET',
+  url: 'http://localhost:5173/',
+  userId: 2,
+  username: 'Warrior-2',
+  ip: '127.0.0.1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36'
+} [0m
+[0;90m<11:29:51 AM[0;90m> ⚓ [34m[1mINFO[0m [38;5;134mclash-armies:server  [0;90m>>[0m Response: {
+  requestId: 'c9d283b6-9daa-4c17-9717-054cc22bd698',
+  method: 'GET',
+  status: 200,
+  duration: '182ms'
+} [0m
+[0;90m<11:29:51 AM[0;90m> ⚓ [34m[1mINFO[0m [38;5;134mclash-armies:server  [0;90m>>[0m Request: {
+  uuid: 'd4a08244-eda4-4881-9fa2-d1608638491b',
+  method: 'GET',
+  url: 'http://localhost:5173/admin',
+  userId: 2,
+  username: 'Warrior-2',
+  ip: '127.0.0.1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36'
+} [0m
+[0;90m<11:29:51 AM[0;90m> ⚓ [34m[1mINFO[0m [38;5;134mclash-armies:server  [0;90m>>[0m Response: {
+  requestId: 'd4a08244-eda4-4881-9fa2-d1608638491b',
+  method: 'GET',
+  status: 403,
+  duration: '150ms'
+} [0m
+[0;90m<11:29:52 AM[0;90m> ⚓ [34m[1mINFO[0m [38;5;134mclash-armies:server  [0;90m>>[0m Request: {
+  uuid: '7cfbb930-51c7-447f-9e44-dadb30c8e878',
+  method: 'GET',
+  url: 'http://localhost:5173/',
+  userId: 2,
+  username: 'Warrior-2',
+  ip: '127.0.0.1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36'
+} [0m
+[0;90m<11:29:52 AM[0;90m> ⚓ [34m[1mINFO[0m [38;5;134mclash-armies:server  [0;90m>>[0m Response: {
+  requestId: '7cfbb930-51c7-447f-9e44-dadb30c8e878',
+  method: 'GET',
+  status: 200,
+  duration: '291ms'
+} [0m
+[0;90m<11:29:52 AM[0;90m> ⚓ [34m[1mINFO[0m [38;5;134mclash-armies:server  [0;90m>>[0m Request: {
+  uuid: 'c82b5c7c-61f7-407c-afe9-4247d22f7084',
+  method: 'GET',
+  url: 'http://localhost:5173/',
+  userId: 2,
+  username: 'Warrior-2',
+  ip: '127.0.0.1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36'
+} [0m
+[0;90m<11:29:52 AM[0;90m> ⚓ [34m[1mINFO[0m [38;5;134mclash-armies:server  [0;90m>>[0m Response: {
+  requestId: 'c82b5c7c-61f7-407c-afe9-4247d22f7084',
+  method: 'GET',
+  status: 200,
+  duration: '206ms'
+} [0m
+[0;90m<11:29:53 AM[0;90m> ⚓ [34m[1mINFO[0m [38;5;134mclash-armies:server  [0;90m>>[0m Request: {
+  uuid: 'c771d5a8-3a09-4d67-9d97-3d0abe4e2e22',
+  method: 'GET',
+  url: 'http://localhost:5173/',
+  userId: 2,
+  username: 'Warrior-2',
+  ip: '127.0.0.1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36'
+} [0m
+[0;90m<11:29:53 AM[0;90m> ⚓ [34m[1mINFO[0m [38;5;134mclash-armies:server  [0;90m>>[0m Response: {
+  requestId: 'c771d5a8-3a09-4d67-9d97-3d0abe4e2e22',
+  method: 'GET',
+  status: 200,
+  duration: '244ms'
+} [0m
+[0;90m<11:29:53 AM[0;90m> ⚓ [34m[1mINFO[0m [38;5;134mclash-armies:server  [0;90m>>[0m Request: {
+  uuid: 'd536c3df-d19a-4f31-ac8d-e7f73b3cf8ba',
+  method: 'GET',
+  url: 'http://localhost:5173/',
+  userId: 2,
+  username: 'Warrior-2',
+  ip: '127.0.0.1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36'
+} [0m
+[0;90m<11:29:54 AM[0;90m> ⚓ [34m[1mINFO[0m [38;5;134mclash-armies:server  [0;90m>>[0m Response: {
+  requestId: 'd536c3df-d19a-4f31-ac8d-e7f73b3cf8ba',
+  method: 'GET',
+  status: 200,
+  duration: '246ms'
+} [0m
+[0;90m<11:29:54 AM[0;90m> ⚓ [34m[1mINFO[0m [38;5;134mclash-armies:server  [0;90m>>[0m Request: {
+  uuid: '5a10b2af-ffb0-4069-8c80-4aca8db88fd0',
+  method: 'GET',
+  url: 'http://localhost:5173/',
+  userId: 2,
+  username: 'Warrior-2',
+  ip: '127.0.0.1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36'
+} [0m
+[0;90m<11:29:54 AM[0;90m> ⚓ [34m[1mINFO[0m [38;5;134mclash-armies:server  [0;90m>>[0m Response: {
+  requestId: '5a10b2af-ffb0-4069-8c80-4aca8db88fd0',
+  method: 'GET',
+  status: 200,
+  duration: '194ms'
+} [0m
+[0;90m<11:32:38 AM[0;90m> ⚓ [34m[1mINFO[0m [38;5;134mclash-armies:server  [0;90m>>[0m Request: {
+  uuid: '0ca81a67-d55c-47aa-855f-6b96f7b76812',
+  method: 'GET',
+  url: 'http://localhost:5173/army-builder',
+  userId: 4,
+  username: 'Warrior-4',
+  ip: '127.0.0.1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36'
+} [0m
+[0;90m<11:32:38 AM[0;90m> ⚓ [34m[1mINFO[0m [38;5;134mclash-armies:server  [0;90m>>[0m Response: {
+  requestId: '0ca81a67-d55c-47aa-855f-6b96f7b76812',
+  method: 'GET',
+  status: 200,
+  duration: '317ms'
+} [0m
+[0;90m<11:32:39 AM[0;90m> ⚓ [34m[1mINFO[0m [38;5;134mclash-armies:server  [0;90m>>[0m Request: {
+  uuid: '55bd139b-b533-4c91-8484-606816b38d90',
+  method: 'GET',
+  url: 'http://localhost:5173/',
+  userId: 4,
+  username: 'Warrior-4',
+  ip: '127.0.0.1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36'
+} [0m
+[0;90m<11:32:39 AM[0;90m> ⚓ [34m[1mINFO[0m [38;5;134mclash-armies:server  [0;90m>>[0m Response: {
+  requestId: '55bd139b-b533-4c91-8484-606816b38d90',
+  method: 'GET',
+  status: 200,
+  duration: '266ms'
+} [0m
+11:32:45 AM [vite] (ssr) Error when evaluating SSR module /src/routes/armies/town-hall-[slug]/+page.server.ts:
+|- Error: The service is no longer running
+    at /root/clash-armies/node_modules/vite/node_modules/esbuild/lib/main.js:737:38
+    at sendRequest (/root/clash-armies/node_modules/vite/node_modules/esbuild/lib/main.js:618:36)
+    at start (/root/clash-armies/node_modules/vite/node_modules/esbuild/lib/main.js:736:9)
+    at Object.transform2 [as transform] (/root/clash-armies/node_modules/vite/node_modules/esbuild/lib/main.js:797:5)
+    at /root/clash-armies/node_modules/vite/node_modules/esbuild/lib/main.js:2046:77
+    at new Promise (<anonymous>)
+    at Object.transform (/root/clash-armies/node_modules/vite/node_modules/esbuild/lib/main.js:2046:36)
+    at transform (/root/clash-armies/node_modules/vite/node_modules/esbuild/lib/main.js:1881:62)
+    at transformWithEsbuild (file:///root/clash-armies/node_modules/vite/dist/node/chunks/dep-0AosnpPU.js:12180:26)
+    at async TransformPluginContext.transform (file:///root/clash-armies/node_modules/vite/dist/node/chunks/dep-0AosnpPU.js:12242:24)
+
+[0;90m<11:32:53 AM[0;90m> ⚓ [34m[1mINFO[0m [38;5;134mclash-armies:server  [0;90m>>[0m Request: {
+  uuid: '78cd862c-29be-4932-9b3d-ff3a3312a5b5',
+  method: 'GET',
+  url: 'http://localhost:5173/army-builder',
+  userId: 4,
+  username: 'Warrior-4',
+  ip: '127.0.0.1',
+  userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36'
+} [0m
+[0;90m<11:32:53 AM[0;90m> ⚓ [34m[1mINFO[0m [38;5;134mclash-armies:server  [0;90m>>[0m Response: {
+  requestId: '78cd862c-29be-4932-9b3d-ff3a3312a5b5',
+  method: 'GET',
+  status: 200,
+  duration: '162ms'
+} [0m
