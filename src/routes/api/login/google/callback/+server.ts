@@ -44,6 +44,7 @@ export async function GET(req: RequestEvent): Promise<Response> {
 
 	try {
 		const tokens = await google.validateAuthorizationCode(code, storedCodeVerifier);
+		console.log('tokens', tokens);
 		const response = await fetch('https://openidconnect.googleapis.com/v1/userinfo', {
 			headers: {
 				Authorization: `Bearer ${tokens.accessToken}`,
