@@ -88,6 +88,7 @@ POST   /app/api/v1/armies/[id]/like      # 点赞军队
 DELETE /app/api/v1/armies/[id]/like      # 取消点赞
 POST   /app/api/v1/armies/[id]/bookmark  # 收藏军队
 DELETE /app/api/v1/armies/[id]/bookmark  # 取消收藏
+GET    /app/api/v1/armies/bookmarked     # 获取收藏军队列表
 ```
 
 ### 5. 评论系统接口

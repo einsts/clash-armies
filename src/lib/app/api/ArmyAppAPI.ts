@@ -13,6 +13,7 @@ import type {
   AppArmy 
 } from '../types/army';
 import type { PaginatedResponse } from '../types/common';
+import type { Army } from '../types/army';
 
 export class ArmyAppAPI {
   constructor(private armyAPI: ArmyAPI) {}
@@ -145,16 +146,23 @@ export class ArmyAppAPI {
    * 收藏军队
    */
   async bookmarkArmy(req: RequestEvent, armyId: number): Promise<void> {
-    // TODO: 实现收藏功能
-    // 这里需要添加收藏相关的数据库操作
-    console.log(`Bookmarking army ${armyId} for user`);
+    // 使用现有的收藏系统
+    await this.armyAPI.bookmark(req, armyId);
   }
 
   /**
    * 取消收藏
    */
   async unbookmarkArmy(req: RequestEvent, armyId: number): Promise<void> {
-    // TODO: 实现取消收藏功能
-    console.log(`Unbookmarking army ${armyId} for user`);
+    // 使用现有的取消收藏系统
+    await this.armyAPI.removeBookmark(req, armyId);
+  }
+
+  /**
+   * 获取用户收藏的军队
+   */
+  async getSavedArmies(req: RequestEvent, username: string): Promise<Army[]> {
+    // 使用现有的获取收藏军队方法
+    return this.armyAPI.getSavedArmies(req, { username });
   }
 }

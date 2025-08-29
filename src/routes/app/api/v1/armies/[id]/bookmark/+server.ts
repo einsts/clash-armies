@@ -7,7 +7,6 @@ import { createApiEndpoint } from '$lib/app/middleware/errorHandler';
 import { setCorsHeaders } from '$lib/app/middleware/cors';
 import { requireAuth } from '$lib/app/middleware/auth';
 import { rateLimitMiddleware } from '$lib/app/middleware/rateLimit';
-import { initRequest } from '$lib/server/utils';
 import type { RequestEvent } from '@sveltejs/kit';
 
 export const POST = createApiEndpoint(async (req: RequestEvent) => {
@@ -28,16 +27,14 @@ export const POST = createApiEndpoint(async (req: RequestEvent) => {
       return response;
     }
     
-    // req.locals.server 应该已经由 hooks.server.ts 初始化
-    
-    // TODO: 实现收藏功能
-    // 这里需要添加收藏相关的数据库操作
-    // 可以创建一个新的收藏表或者扩展现有的用户偏好表
+    // 使用现有的收藏系统
+    await req.locals.server.army.bookmark(req, armyId);
     
     const response = createSuccessResponse({
       message: '收藏成功',
       armyId: armyId,
-      userId: user.userId
+      userId: user.userId,
+      action: 'bookmark'
     });
     
     setCorsHeaders(response);
@@ -49,6 +46,12 @@ export const POST = createApiEndpoint(async (req: RequestEvent) => {
 });
 
 export const DELETE = createApiEndpoint(async (req: RequestEvent) => {
+  // 应用限流中间件
+  rateLimitMiddleware({
+    windowMs: 15 * 60 * 1000, // 15分钟
+    maxRequests: 20 // 取消收藏接口限制适中
+  })(req);
+
   try {
     // 验证用户身份
     const user = requireAuth(req);
@@ -60,18 +63,17 @@ export const DELETE = createApiEndpoint(async (req: RequestEvent) => {
       return response;
     }
     
-    // req.locals.server 应该已经由 hooks.server.ts 初始化
-    
-    // TODO: 实现取消收藏功能
+    // 使用现有的取消收藏系统
+    await req.locals.server.army.removeBookmark(req, armyId);
     
     const response = createSuccessResponse({
       message: '取消收藏成功',
       armyId: armyId,
-      userId: user.userId
+      userId: user.userId,
+      action: 'unbookmark'
     });
     
     setCorsHeaders(response);
-    
     return response;
     
   } catch (error) {
