@@ -1,48 +1,27 @@
 /**
- * 用户注册接口
+ * 用户注册接口 - 已移除，Google OAuth自动创建用户
  */
 
-import { createSuccessResponse, createValidationErrorResponse } from '$lib/app/utils/response';
+import { createErrorResponse } from '$lib/app/utils/response';
 import { createApiEndpoint } from '$lib/app/middleware/errorHandler';
 import { setCorsHeaders } from '$lib/app/middleware/cors';
 import type { RequestEvent } from '@sveltejs/kit';
-import { z } from 'zod';
-
-// 注册请求验证schema
-const registerSchema = z.object({
-  username: z.string().min(3).max(20),
-  email: z.string().email(),
-  password: z.string().min(6),
-  playerTag: z.string().optional()
-});
 
 export const POST = createApiEndpoint(async (req: RequestEvent) => {
-  try {
-    const body = await req.request.json();
-    const validatedData = registerSchema.parse(body);
-    
-    // TODO: 实现实际的用户注册逻辑
-    // 这里应该调用现有的UserAPI
-    
-    const response = createSuccessResponse({
-      message: 'User registered successfully',
-      userId: 123 // 临时ID
-    });
-    
-    setCorsHeaders(response);
-    return response;
-    
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      const response = createValidationErrorResponse(
-        'VALIDATION_ERROR',
-        'Registration data validation failed',
-        error.errors
-      );
-      setCorsHeaders(response);
-      return response;
+  // 返回错误信息，引导用户使用Google OAuth登录
+  const response = createErrorResponse(
+    'REGISTRATION_NOT_NEEDED',
+    '用户注册功能已移除，请使用Google OAuth登录。系统会在首次登录时自动创建用户账户。',
+    {
+      alternative: 'POST /app/api/v1/auth/google',
+      instructions: [
+        '1. 调用 POST /app/api/v1/auth/google 获取授权URL',
+        '2. 在APP中打开授权URL',
+        '3. 用户完成Google登录后，系统自动创建账户'
+      ]
     }
-    
-    throw error; // 让错误处理中间件处理
-  }
+  );
+  
+  setCorsHeaders(response);
+  return response;
 });

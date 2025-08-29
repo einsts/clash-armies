@@ -1,22 +1,18 @@
 /**
- * 用户登录接口
+ * 用户登录接口 - 与Web端保持一致
  */
 
-import { createSuccessResponse, createAuthErrorResponse } from '$lib/app/utils/response';
+import { createSuccessResponse, createErrorResponse } from '$lib/app/utils/response';
 import { createApiEndpoint } from '$lib/app/middleware/errorHandler';
 import { setCorsHeaders } from '$lib/app/middleware/cors';
 import { rateLimitMiddleware } from '$lib/app/middleware/rateLimit';
-import { generateAccessToken, generateRefreshToken } from '$lib/app/middleware/auth';
+import { jwtAuthMiddleware } from '$lib/app/middleware/auth';
 import type { RequestEvent } from '@sveltejs/kit';
 import { z } from 'zod';
-import { auth } from '$lib/server/auth/lucia';
 
-// 登录请求验证schema
+// 登录请求验证schema - 与Web端保持一致，不包含设备信息
 const loginSchema = z.object({
-  username: z.string().min(1, '用户名不能为空'),
-  password: z.string().min(1, '密码不能为空'),
-  deviceName: z.string().optional(),
-  deviceType: z.enum(['mobile', 'tablet', 'desktop']).optional().default('mobile')
+  // 移除设备相关字段，与Web端保持一致
 });
 
 export const POST = createApiEndpoint(async (req: RequestEvent) => {
@@ -30,73 +26,48 @@ export const POST = createApiEndpoint(async (req: RequestEvent) => {
     const body = await req.request.json();
     const validatedData = loginSchema.parse(body);
     
-    // req.locals.server 应该已经由 hooks.server.ts 初始化
+    // 检查用户是否已经登录（通过JWT Token）
+    const user = jwtAuthMiddleware(req);
     
-    // 使用现有的Lucia认证系统
-    const key = await auth.useKey('username', validatedData.username.toLowerCase(), validatedData.password);
-    const session = await auth.createSession({
-      userId: key.userId,
-      attributes: {}
-    });
+    if (user) {
+      // 用户已经登录，返回用户信息和登录状态
+      const response = createSuccessResponse({
+        message: '用户已登录',
+        isLoggedIn: true,
+        user: {
+          id: user.userId,
+          username: user.username,
+          roles: user.roles,
+          // 其他用户信息需要从数据库获取
+        },
+        loginMethod: 'google_oauth'
+      });
+      
+      setCorsHeaders(response);
+      return response;
+    }
     
-    // 获取用户信息
-    const user = await auth.getUser(key.userId);
-    
-    // 生成JWT Token
-    const accessToken = generateAccessToken({
-      userId: user.userId,
-      username: user.username,
-      roles: user.roles || ['user']
-    });
-    
-    const refreshToken = generateRefreshToken(user.userId, 1); // 版本1
-    
-    // 创建设备记录
-    const deviceId = crypto.randomUUID();
-    const device = {
-      id: deviceId,
-      userId: user.userId,
-      deviceName: validatedData.deviceName || 'Unknown Device',
-      deviceType: validatedData.deviceType,
-      isActive: true,
-      lastLoginAt: new Date(),
-      createdAt: new Date()
-    };
-    
-    // TODO: 保存设备信息到数据库
-    
+    // 用户未登录，引导使用Google OAuth
     const response = createSuccessResponse({
-      accessToken,
-      refreshToken,
-      user: {
-        id: user.userId,
-        username: user.username,
-        roles: user.roles || ['user'],
-        playerTag: user.playerTag,
-        level: user.level
-      },
-      device
+      message: '请使用Google OAuth登录',
+      isLoggedIn: false,
+      googleOAuthUrl: '/app/api/v1/auth/google',
+      instructions: [
+        '1. 调用 POST /app/api/v1/auth/google 获取授权URL',
+        '2. 在APP中打开授权URL',
+        '3. 用户完成Google登录后，调用 POST /app/api/v1/auth/google/callback'
+      ]
     });
     
     setCorsHeaders(response);
     return response;
     
-  } catch (error) {
+  } catch (error: unknown) {
     if (error instanceof z.ZodError) {
-      const response = createAuthErrorResponse(
+      const response = createErrorResponse(
         'VALIDATION_ERROR',
         '登录数据验证失败',
         error.errors
-      );
-      setCorsHeaders(response);
-      return response;
-    }
-    
-    // Lucia认证错误处理
-    if (error.message === 'AUTH_INVALID_KEY_ID' || error.message === 'AUTH_INVALID_PASSWORD') {
-      const response = createAuthErrorResponse(
-        'INVALID_CREDENTIALS',
-        '用户名或密码错误'
       );
       setCorsHeaders(response);
       return response;
