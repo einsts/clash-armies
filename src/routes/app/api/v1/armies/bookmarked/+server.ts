@@ -33,8 +33,12 @@ export const GET = createApiEndpoint(async (req: RequestEvent) => {
     const queryParams = Object.fromEntries(url.searchParams.entries());
     const validatedParams = querySchema.parse(queryParams);
 
+
+    
     // 获取用户收藏的军队
-    const savedArmies = await req.locals.server.army.getSavedArmies(req, user.username);
+    const savedArmies = await req.locals.server.army.getSavedArmies(req, { username: user.username });
+    
+
     
     // 手动实现分页
     const startIndex = (validatedParams.page - 1) * validatedParams.limit;

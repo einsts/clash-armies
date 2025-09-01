@@ -42,7 +42,6 @@ export const POST = createApiEndpoint(async (req: RequestEvent) => {
       googleId: string;
       googleEmail: string;
       playerTag: string | null;
-      roles: string[];
     }>('users', { googleId: userInfo.googleId });
     
     let userId: number;
@@ -53,7 +52,10 @@ export const POST = createApiEndpoint(async (req: RequestEvent) => {
       // 现有用户：更新邮箱信息（如果需要）
       userId = existingUser.id;
       username = existingUser.username;
-      roles = existingUser.roles;
+      
+      // 获取用户角色
+      const userRoles = await db.getRows<{ role: string }>('user_roles', { userId: existingUser.id });
+      roles = userRoles.map(ur => ur.role);
       
       // 如果邮箱有变化，更新数据库
       if (existingUser.googleEmail !== userInfo.email) {
