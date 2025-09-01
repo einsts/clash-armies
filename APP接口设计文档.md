@@ -325,7 +325,7 @@ GOOGLE_AUTH_SECRET=your_secret
 - [Lucia认证文档](https://lucia-auth.com/) - 认证系统说明
 
 ### 开发指南
-- [API接口规范](./API接口规范.md) - 接口设计和响应格式
+- [APP-API接口规范](./APP-API接口规范.md) - 完整的API接口参考文档
 - [数据库设计](./数据库设计.md) - 数据模型和关系
 - [部署指南](./部署指南.md) - 生产环境部署
 
