@@ -13,7 +13,7 @@ import { z } from 'zod';
 // 评论请求验证schema
 const commentSchema = z.object({
   comment: z.string().min(1, '评论内容不能为空').max(1000, '评论内容不能超过1000字符'),
-  replyTo: z.number().optional() // 回复的评论ID
+  replyTo: z.number().nullable().optional() // 回复的评论ID，可以为null
 });
 
 // 评论筛选参数验证schema

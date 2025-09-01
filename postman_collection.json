@@ -158,7 +158,7 @@
           "request": {
             "method": "POST",
             "header": [ { "key": "Content-Type", "value": "application/json" } ],
-            "body": { "mode": "raw", "raw": "{\n  \"comment\": \"这是一条测试评论\",\n  \"replyTo\": null\n}" },
+            "body": { "mode": "raw", "raw": "{\n  \"comment\": \"这是一条来自APP的测试评论\",\n  \"replyTo\": null\n}" },
             "url": { "raw": "{{baseUrl}}/app/api/{{apiVersion}}/armies/{{armyId}}/comments", "host": ["{{baseUrl}}"], "path": ["app", "api", "{{apiVersion}}", "armies", "{{armyId}}", "comments"] }
           },
           "event": [ { "listen": "test", "script": { "type": "text/javascript", "exec": [ "const j = pm.response.json();", "pm.test('发表评论', () => { pm.expect(j.success).to.be.true; pm.expect(j.data).to.have.property('commentId'); });", "if (j.data && j.data.commentId) pm.environment.set('commentId', j.data.commentId);" ] } } ]
