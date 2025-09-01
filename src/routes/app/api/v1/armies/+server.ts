@@ -2,14 +2,14 @@
  * 军队列表接口
  */
 
-import { createSuccessResponse, createPaginatedResponse, createValidationErrorResponse } from '$lib/app/utils/response';
+import { createSuccessResponse, createPaginatedResponse, createErrorResponse, createValidationErrorResponse } from '$lib/app/utils/response';
 import { createApiEndpoint } from '$lib/app/middleware/errorHandler';
 import { setCorsHeaders } from '$lib/app/middleware/cors';
+import { requireAuth } from '$lib/app/middleware/auth';
 import { rateLimitMiddleware } from '$lib/app/middleware/rateLimit';
 import { ArmyTransformer } from '$lib/app/transformers';
 import type { RequestEvent } from '@sveltejs/kit';
 import { z } from 'zod';
-import { initRequest } from '$lib/server/utils';
 
 // 军队筛选参数验证schema
 const armyFilterSchema = z.object({
@@ -83,19 +83,59 @@ export const GET = createApiEndpoint(async (req: RequestEvent) => {
 });
 
 export const POST = createApiEndpoint(async (req: RequestEvent) => {
+  // 应用限流中间件
+  rateLimitMiddleware({
+    windowMs: 15 * 60 * 1000, // 15分钟
+    maxRequests: 10 // 创建军队接口限制较严格
+  })(req);
+
   try {
-    // TODO: 实现军队创建
-    // 这里应该调用现有的ArmyAPI来创建军队
+    // 验证用户身份
+    const user = requireAuth(req);
+    
+    const body = await req.request.json();
+    
+    // 验证军队数据
+    const armyData = {
+      name: body.name,
+      townHall: body.townHall,
+      banner: body.banner,
+      units: body.units || [],
+      equipment: body.equipment || [],
+      pets: body.pets || [],
+      tags: body.tags || [],
+      guide: body.guide
+    };
+    
+    // 使用现有的军队系统保存军队
+    const armyId = await req.locals.server.army.saveArmy(req, armyData);
     
     const response = createSuccessResponse({
       message: '军队创建成功',
-      armyId: 123 // 临时ID
+      armyId: armyId,
+      userId: user.userId,
+      army: {
+        id: armyId,
+        name: armyData.name,
+        townHall: armyData.townHall,
+        banner: armyData.banner
+      }
     });
     
     setCorsHeaders(response);
     return response;
     
   } catch (error) {
-    throw error; // 让错误处理中间件处理
+    if (error instanceof Error) {
+      const response = createErrorResponse(
+        'ARMY_CREATION_ERROR',
+        error.message,
+        { details: error.message }
+      );
+      setCorsHeaders(response);
+      return response;
+    }
+    
+    throw error; // 让错误处理中间件处理其他错误
   }
 });

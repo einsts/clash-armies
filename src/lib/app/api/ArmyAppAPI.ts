@@ -13,7 +13,6 @@ import type {
   AppArmy 
 } from '../types/army';
 import type { PaginatedResponse } from '../types/common';
-import type { Army } from '../types/army';
 
 export class ArmyAppAPI {
   constructor(private armyAPI: ArmyAPI) {}
@@ -24,28 +23,29 @@ export class ArmyAppAPI {
   async getArmies(req: RequestEvent, filters: ArmyFilterParams): Promise<PaginatedResponse<AppArmy>> {
     // 调用现有的getArmies方法
     const result = await this.armyAPI.getArmies(req, {
-      page: filters.page || 1,
-      limit: filters.limit || 20,
       townHall: filters.townHall,
-      sort: filters.sort || 'new',
-      tags: filters.tags,
-      search: filters.search,
-      creator: filters.creator
+      sort: filters.sort === 'new' || filters.sort === 'score' ? filters.sort : 'new',
+      username: filters.creator
     });
 
     // 转换数据格式
     const transformer = new ArmyTransformer();
-    const appArmies = transformer.toAppFormatList(result.armies);
+    const appArmies = transformer.toAppFormatList(result as any);
+
+    // 手动计算分页
+    const page = filters.page || 1;
+    const limit = filters.limit || 20;
+    const total = result.length;
 
     return {
       data: appArmies,
       pagination: {
-        page: result.page,
-        limit: result.limit,
-        total: result.total,
-        totalPages: Math.ceil(result.total / result.limit),
-        hasNext: result.page < Math.ceil(result.total / result.limit),
-        hasPrev: result.page > 1
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+        hasNext: page < Math.ceil(total / limit),
+        hasPrev: page > 1
       }
     };
   }
@@ -57,9 +57,13 @@ export class ArmyAppAPI {
     // 调用现有的getArmy方法
     const army = await this.armyAPI.getArmy(req, armyId);
     
+    if (!army) {
+      throw new Error('Army not found');
+    }
+    
     // 转换数据格式
     const transformer = new ArmyTransformer();
-    return transformer.toAppFormat(army);
+    return transformer.toAppFormat(army as any);
   }
 
   /**
@@ -132,14 +136,14 @@ export class ArmyAppAPI {
    * 点赞军队
    */
   async likeArmy(req: RequestEvent, armyId: number): Promise<void> {
-    await this.armyAPI.saveVote(req, armyId, 1);
+    await this.armyAPI.saveVote(req, { armyId, vote: 1 });
   }
 
   /**
    * 取消点赞
    */
   async unlikeArmy(req: RequestEvent, armyId: number): Promise<void> {
-    await this.armyAPI.saveVote(req, armyId, 0);
+    await this.armyAPI.saveVote(req, { armyId, vote: 0 });
   }
 
   /**
@@ -161,7 +165,7 @@ export class ArmyAppAPI {
   /**
    * 获取用户收藏的军队
    */
-  async getSavedArmies(req: RequestEvent, username: string): Promise<Army[]> {
+  async getSavedArmies(req: RequestEvent, username: string): Promise<any[]> {
     // 使用现有的获取收藏军队方法
     return this.armyAPI.getSavedArmies(req, { username });
   }
