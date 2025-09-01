@@ -30,7 +30,13 @@ export function rateLimitMiddleware(config: Partial<RateLimitConfig> = {}) {
   const finalConfig = { ...DEFAULT_CONFIG, ...config };
   
   return function(req: RequestEvent): void {
-    const key = finalConfig.keyGenerator!(req);
+    // 获取请求路径，用于区分不同接口
+    const path = req.url.pathname;
+    
+    // 生成唯一的键：IP + 路径
+    const baseKey = finalConfig.keyGenerator!(req);
+    const key = `${baseKey}:${path}`;
+    
     const now = Date.now();
     
     // 获取当前记录

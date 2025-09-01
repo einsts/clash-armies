@@ -36,7 +36,37 @@ export const GET = createApiEndpoint(async (req: RequestEvent) => {
 
     
     // 获取用户收藏的军队
-    const savedArmies = await req.locals.server.army.getSavedArmies(req, { username: user.username });
+    // 直接使用用户ID查询，避免username不匹配的问题
+    const savedArmyIds = await req.locals.server.db.query<{ armyId: number }>(`
+      SELECT sa.armyId
+      FROM saved_armies sa
+      WHERE sa.userId = ?
+    `, [user.userId]);
+    
+    const savedArmyIdsArr = savedArmyIds.map((row) => row.armyId);
+    
+    if (!savedArmyIdsArr.length) {
+      // 如果没有收藏记录，返回空列表
+      const response = createSuccessResponse({
+        message: '获取收藏军队成功',
+        data: {
+          armies: [],
+          pagination: {
+            page: validatedParams.page,
+            limit: validatedParams.limit,
+            total: 0,
+            totalPages: 0,
+            hasNext: false,
+            hasPrev: false
+          }
+        }
+      });
+      setCorsHeaders(response);
+      return response;
+    }
+    
+    // 使用军队ID获取完整的军队信息
+    const savedArmies = await req.locals.server.army.getArmies(req, { ids: savedArmyIdsArr });
     
 
     
