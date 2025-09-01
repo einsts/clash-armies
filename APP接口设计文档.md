@@ -73,7 +73,13 @@ POST /app/api/v1/auth/logout     # 用户登出
 GET  /app/api/v1/auth/profile    # 用户信息
 ```
 
-### 3. 军队管理接口
+### 3. 用户偏好设置接口
+```
+GET /app/api/v1/users/profile    # 获取用户资料
+PUT /app/api/v1/users/profile    # 更新用户资料（用户名）
+```
+
+### 4. 军队管理接口
 ```
 GET    /app/api/v1/armies        # 军队列表
 POST   /app/api/v1/armies        # 创建军队
@@ -82,7 +88,7 @@ PUT    /app/api/v1/armies/[id]   # 更新军队
 DELETE /app/api/v1/armies/[id]   # 删除军队
 ```
 
-### 4. 军队交互接口
+### 5. 军队交互接口
 ```
 POST   /app/api/v1/armies/[id]/like      # 点赞军队
 DELETE /app/api/v1/armies/[id]/like      # 取消点赞
@@ -91,14 +97,14 @@ DELETE /app/api/v1/armies/[id]/bookmark  # 取消收藏
 GET    /app/api/v1/armies/bookmarked     # 获取收藏军队列表
 ```
 
-### 5. 评论系统接口
+### 6. 评论系统接口
 ```
 GET  /app/api/v1/armies/[id]/comments    # 获取评论
 POST /app/api/v1/armies/[id]/comments    # 发表评论
 DELETE /app/api/v1/armies/[id]/comments?commentId=X  # 删除评论
 ```
 
-### 6. 游戏数据接口
+### 7. 游戏数据接口
 ```
 GET /app/api/v1/game/units       # 单位数据
 GET /app/api/v1/game/equipment   # 装备数据
