@@ -2,12 +2,11 @@
  * 军队评论接口
  */
 
-import { createSuccessResponse, createPaginatedResponse, createValidationErrorResponse } from '$lib/app/utils/response';
+import { createSuccessResponse, createPaginatedResponse, createErrorResponse, createValidationErrorResponse } from '$lib/app/utils/response';
 import { createApiEndpoint } from '$lib/app/middleware/errorHandler';
 import { setCorsHeaders } from '$lib/app/middleware/cors';
 import { requireAuth } from '$lib/app/middleware/auth';
 import { rateLimitMiddleware } from '$lib/app/middleware/rateLimit';
-import { initRequest } from '$lib/server/utils';
 import type { RequestEvent } from '@sveltejs/kit';
 import { z } from 'zod';
 
@@ -45,18 +44,26 @@ export const GET = createApiEndpoint(async (req: RequestEvent) => {
     // 验证查询参数
     const validatedParams = commentFilterSchema.parse(queryParams);
     
-    // req.locals.server 应该已经由 hooks.server.ts 初始化
+    // 获取军队信息（包含评论）
+    const army = await req.locals.server.army.getArmy(req, armyId);
+    if (!army) {
+      const response = createErrorResponse('ARMY_NOT_FOUND', '军队不存在');
+      setCorsHeaders(response);
+      return response;
+    }
     
-    // TODO: 调用现有的CommentAPI获取评论列表
-    // 这里应该复用现有的getComments方法
-    // 暂时返回空数据，等CommentAPI实现后再连接
+    // 从军队数据中提取评论
+    const comments = army.comments || [];
+    const total = comments.length;
     
-    const mockComments = []; // 临时使用空数组
-    const total = 0; // 临时使用0
+    // 手动实现分页
+    const startIndex = (validatedParams.page - 1) * validatedParams.limit;
+    const endIndex = startIndex + validatedParams.limit;
+    const paginatedComments = comments.slice(startIndex, endIndex);
     
     // 创建分页响应
     const response = createPaginatedResponse(
-      mockComments,
+      paginatedComments,
       validatedParams.page,
       validatedParams.limit,
       total
@@ -76,6 +83,44 @@ export const GET = createApiEndpoint(async (req: RequestEvent) => {
       return response;
     }
     
+    throw error; // 让错误处理中间件处理其他错误
+  }
+});
+
+export const DELETE = createApiEndpoint(async (req: RequestEvent) => {
+  // 应用限流中间件
+  rateLimitMiddleware({
+    windowMs: 15 * 60 * 1000, // 15分钟
+    maxRequests: 10 // 删除评论接口限制较严格
+  })(req);
+
+  try {
+    // 验证用户身份
+    const user = requireAuth(req);
+    
+    // 从查询参数获取评论ID
+    const url = new URL(req.request.url);
+    const commentId = parseInt(url.searchParams.get('commentId') || '');
+    
+    if (isNaN(commentId)) {
+      const response = createErrorResponse('INVALID_COMMENT_ID', '无效的评论ID');
+      setCorsHeaders(response);
+      return response;
+    }
+    
+    // 使用现有的评论系统删除评论
+    await req.locals.server.army.deleteComment(req, commentId);
+    
+    const response = createSuccessResponse({
+      message: '评论删除成功',
+      commentId: commentId,
+      userId: user.userId
+    });
+    
+    setCorsHeaders(response);
+    return response;
+    
+  } catch (error) {
     throw error; // 让错误处理中间件处理其他错误
   }
 });
@@ -101,17 +146,23 @@ export const POST = createApiEndpoint(async (req: RequestEvent) => {
     const body = await req.request.json();
     const validatedData = commentSchema.parse(body);
     
-    // req.locals.server 应该已经由 hooks.server.ts 初始化
+    // 准备评论数据
+    const commentData = {
+      armyId: armyId,
+      comment: validatedData.comment,
+      replyTo: validatedData.replyTo || null
+    };
     
-    // TODO: 调用现有的CommentAPI来发表评论
-    // 这里应该复用现有的saveComment方法
-    // 暂时返回成功，等CommentAPI实现后再连接
+    // 使用现有的评论系统保存评论
+    const commentId = await req.locals.server.army.saveComment(req, commentData);
     
     const response = createSuccessResponse({
       message: '评论发表成功',
-      commentId: 123, // 临时ID
+      commentId: commentId,
       armyId: armyId,
-      userId: user.userId
+      userId: user.userId,
+      comment: validatedData.comment,
+      replyTo: validatedData.replyTo || null
     });
     
     setCorsHeaders(response);

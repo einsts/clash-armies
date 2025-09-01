@@ -95,6 +95,7 @@ GET    /app/api/v1/armies/bookmarked     # 获取收藏军队列表
 ```
 GET  /app/api/v1/armies/[id]/comments    # 获取评论
 POST /app/api/v1/armies/[id]/comments    # 发表评论
+DELETE /app/api/v1/armies/[id]/comments?commentId=X  # 删除评论
 ```
 
 ### 6. 游戏数据接口

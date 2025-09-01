@@ -165,4 +165,20 @@ export class ArmyAppAPI {
     // 使用现有的获取收藏军队方法
     return this.armyAPI.getSavedArmies(req, { username });
   }
+
+  /**
+   * 保存评论
+   */
+  async saveComment(req: RequestEvent, data: { armyId: number; comment: string; replyTo?: number | null }): Promise<number> {
+    // 使用现有的保存评论方法
+    return this.armyAPI.saveComment(req, data);
+  }
+
+  /**
+   * 删除评论
+   */
+  async deleteComment(req: RequestEvent, commentId: number): Promise<void> {
+    // 使用现有的删除评论方法
+    await this.armyAPI.deleteComment(req, commentId);
+  }
 }
