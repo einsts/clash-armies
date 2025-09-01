@@ -512,6 +512,14 @@ Authorization: Bearer <access_token>
 
 ### ❤️ 互动功能
 
+#### Vote系统说明
+APP的点赞系统支持三种状态：
+- **点赞 (vote: 1)**: 用户对军队表示喜欢
+- **取消点赞 (vote: 0)**: 用户取消所有点赞状态
+- **反向点赞 (vote: -1)**: 用户对军队表示不喜欢
+
+**注意**: 同一用户对同一军队只能有一种vote状态，新的vote会覆盖之前的vote。
+
 #### 1. 点赞军队
 ```http
 POST /app/api/v1/armies/{id}/like
@@ -568,7 +576,63 @@ Authorization: Bearer <access_token>
 }
 ```
 
-#### 3. 收藏军队
+#### 3. 反向点赞
+```http
+POST /app/api/v1/armies/{id}/dislike
+```
+
+**请求头**
+```http
+Authorization: Bearer <access_token>
+```
+
+**路径参数**
+| 参数 | 类型 | 说明 |
+|------|------|------|
+| `id` | number | 军队ID |
+
+**响应示例**
+```json
+{
+  "success": true,
+  "data": {
+    "message": "反向点赞成功",
+    "armyId": 1,
+    "userId": 1,
+    "action": "dislike"
+  }
+}
+```
+
+#### 4. 取消反向点赞
+```http
+DELETE /app/api/v1/armies/{id}/dislike
+```
+
+**请求头**
+```http
+Authorization: Bearer <access_token>
+```
+
+**路径参数**
+| 参数 | 类型 | 说明 |
+|------|------|------|
+| `id` | number | 军队ID |
+
+**响应示例**
+```json
+{
+  "success": true,
+  "data": {
+    "message": "取消反向点赞成功",
+    "armyId": 1,
+    "userId": 1,
+    "action": "undislike"
+  }
+}
+```
+
+#### 5. 收藏军队
 ```http
 POST /app/api/v1/armies/{id}/bookmark
 ```
@@ -596,7 +660,7 @@ Authorization: Bearer <access_token>
 }
 ```
 
-#### 4. 取消收藏
+#### 6. 取消收藏
 ```http
 DELETE /app/api/v1/armies/{id}/bookmark
 ```
@@ -624,7 +688,7 @@ Authorization: Bearer <access_token>
 }
 ```
 
-#### 5. 获取收藏军队列表
+#### 7. 获取收藏军队列表
 ```http
 GET /app/api/v1/armies/bookmarked?page=1&limit=20&sort=new
 ```

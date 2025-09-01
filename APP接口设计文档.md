@@ -90,8 +90,10 @@ DELETE /app/api/v1/armies/[id]   # 删除军队
 
 ### 5. 军队交互接口
 ```
-POST   /app/api/v1/armies/[id]/like      # 点赞军队
-DELETE /app/api/v1/armies/[id]/like      # 取消点赞
+POST   /app/api/v1/armies/[id]/like      # 点赞军队 (vote: 1)
+DELETE /app/api/v1/armies/[id]/like      # 取消点赞 (vote: 0)
+POST   /app/api/v1/armies/[id]/dislike   # 反向点赞 (vote: -1)
+DELETE /app/api/v1/armies/[id]/dislike   # 取消反向点赞 (vote: 0)
 POST   /app/api/v1/armies/[id]/bookmark  # 收藏军队
 DELETE /app/api/v1/armies/[id]/bookmark  # 取消收藏
 GET    /app/api/v1/armies/bookmarked     # 获取收藏军队列表
