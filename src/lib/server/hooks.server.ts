@@ -15,9 +15,17 @@ export const init: ServerInit = async () => {
 };
 
 export const handle: Handle = async ({ event: req, resolve }) => {
-	initRequest(req, server);
+	// 统一处理路由类型判断，避免重复
+	const isAppRoute = req.url.pathname.startsWith('/app/');
+	
+	// 初始化请求，根据路由类型绑定相应的认证函数
+	initRequest(req, server, isAppRoute);
 
-	await authMiddleware(req);
+	// 只有Web路由才需要Web端认证
+	if (!isAppRoute) {
+		await authMiddleware(req);
+	}
+	
 	await server.army.metrics.requestMiddleware(req);
 
 	return resolveRequest(req, resolve);

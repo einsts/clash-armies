@@ -7,6 +7,7 @@ import { lucia } from '$server/auth/lucia';
 import type { RequestEvent, Handle } from '@sveltejs/kit';
 import type { Server } from '$server/api/Server';
 import { dev } from '$app/environment';
+import { verifyAccessToken } from '$lib/app/middleware/auth';
 
 export type SvelteKitHandleResolve = Parameters<Handle>[0]['resolve'];
 
@@ -82,13 +83,46 @@ export function endpoint(action: (req: RequestEvent) => Promise<Response>) {
 	};
 }
 
-export function initRequest(req: RequestEvent, server: Server) {
+export function initRequest(req: RequestEvent, server: Server, isAppRoute: boolean) {
 	req.locals.uuid = uuidv4();
 	req.locals.server = server;
-	req.locals.hasAuth = () => hasAuth(req);
-	req.locals.requireAuth = () => requireAuth(req);
-	req.locals.hasRoles = (...roles: string[]) => hasRoles(req, ...roles);
-	req.locals.requireRoles = (...roles: string[]) => requireRoles(req, ...roles);
+	
+	// 为APP路由提供不同的认证函数
+	if (isAppRoute) {
+		// APP路由使用JWT认证，但需要兼容现有的API调用
+		req.locals.hasAuth = () => false; // APP路由不使用Web端认证
+		req.locals.requireAuth = () => {
+			// 检查是否有JWT token
+			const authHeader = req.request.headers.get('Authorization');
+			if (!authHeader || !authHeader.startsWith('Bearer ')) {
+				throw new Error('Authentication required');
+			}
+			
+			const token = authHeader.substring(7);
+			// 使用APP的JWT验证函数
+			const decoded = verifyAccessToken(token);
+			if (!decoded) {
+				throw new Error('Invalid or expired token');
+			}
+			
+			// 转换为User类型
+			return { 
+				id: decoded.userId, 
+				username: decoded.username, 
+				roles: decoded.roles, 
+				playerTag: null, 
+				level: null 
+			};
+		};
+		req.locals.hasRoles = () => false;
+		req.locals.requireRoles = () => { throw new Error('Use APP auth middleware instead'); };
+	} else {
+		// Web路由使用Web端认证
+		req.locals.hasAuth = () => hasAuth(req);
+		req.locals.requireAuth = () => requireAuth(req);
+		req.locals.hasRoles = (...roles: string[]) => hasRoles(req, ...roles);
+		req.locals.requireRoles = (...roles: string[]) => requireRoles(req, ...roles);
+	}
 }
 
 export async function resolveRequest(req: RequestEvent, resolve: SvelteKitHandleResolve) {

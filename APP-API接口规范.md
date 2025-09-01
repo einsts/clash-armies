@@ -58,6 +58,7 @@ interface AccessToken {
 2. **请求携带Token**: 在请求Header中添加 `Authorization: Bearer <token>`
 3. **Token过期处理**: 使用Refresh Token获取新的Token对
 4. **设备管理**: 支持多设备登录和Token版本控制
+5. **完全独立**: APP认证系统与Web端完全分离，不会重定向到OAuth流程
 
 ### 请求头示例
 ```http
@@ -236,7 +237,7 @@ POST /app/api/v1/auth/refresh
 
 #### 4. 获取用户信息
 ```http
-GET /app/api/v1/auth/profile
+GET /app/api/v1/users/profile
 ```
 
 **请求头**
@@ -249,6 +250,7 @@ Authorization: Bearer <access_token>
 {
   "success": true,
   "data": {
+    "message": "获取用户资料成功",
     "user": {
       "id": 1,
       "username": "testuser",
@@ -1077,6 +1079,11 @@ curl -s "http://localhost:5173/app/api/v1/armies?page=1&limit=5" | jq '.'
 
 ### Q6: 如何实现实时更新？
 **A**: 目前接口不支持WebSocket，可以通过轮询或长轮询实现数据更新。
+
+### Q7: 用户信息接口路径说明
+**A**: 用户相关信息分为两类：
+- **认证相关**: `/app/api/v1/auth/*` - 登录、登出、Token刷新
+- **用户数据**: `/app/api/v1/users/*` - 用户资料获取、更新
 
 ---
 

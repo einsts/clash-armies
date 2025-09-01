@@ -1,0 +1,196 @@
+{
+  "info": {
+    "name": "Clash Armies APP API",
+    "description": "Clash Armies APP API 完整测试集合，包含所有接口的测试用例",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5173", "type": "string" },
+    { "key": "apiVersion", "value": "v1", "type": "string" },
+    { "key": "accessToken", "value": "", "type": "string" },
+    { "key": "refreshToken", "value": "", "type": "string" },
+    { "key": "userId", "value": "", "type": "string" },
+    { "key": "armyId", "value": "", "type": "string" },
+    { "key": "commentId", "value": "", "type": "string" }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [ { "key": "token", "value": "{{accessToken}}", "type": "string" } ]
+  },
+  "item": [
+    {
+      "name": "🔐 认证相关",
+      "item": [
+        {
+          "name": "用户登录",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"googleIdToken\": \"test_google_token_here\"\n}" },
+            "url": { "raw": "{{baseUrl}}/app/api/{{apiVersion}}/auth/login", "host": ["{{baseUrl}}"], "path": ["app", "api", "{{apiVersion}}", "auth", "login"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const j = pm.response.json();",
+                  "pm.test('登录成功', () => { pm.expect(j.success).to.be.true; });",
+                  "pm.test('返回Token与用户', () => { pm.expect(j.data).to.have.property('accessToken'); pm.expect(j.data).to.have.property('refreshToken'); pm.expect(j.data).to.have.property('user'); });",
+                  "pm.environment.set('accessToken', j.data.accessToken);",
+                  "pm.environment.set('refreshToken', j.data.refreshToken);",
+                  "if (j.data.user && j.data.user.id) pm.environment.set('userId', j.data.user.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Token刷新",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}" },
+            "url": { "raw": "{{baseUrl}}/app/api/{{apiVersion}}/auth/refresh", "host": ["{{baseUrl}}"], "path": ["app", "api", "{{apiVersion}}", "auth", "refresh"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const j = pm.response.json();",
+                  "pm.test('刷新成功', () => { pm.expect(j.success).to.be.true; });",
+                  "pm.environment.set('accessToken', j.data.accessToken);",
+                  "pm.environment.set('refreshToken', j.data.refreshToken);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "获取用户信息",
+          "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/app/api/{{apiVersion}}/users/profile", "host": ["{{baseUrl}}"], "path": ["app", "api", "{{apiVersion}}", "users", "profile"] } },
+          "event": [ { "listen": "test", "script": { "type": "text/javascript", "exec": [ "const j = pm.response.json();", "pm.test('获取用户信息', () => { pm.expect(j.success).to.be.true; pm.expect(j.data).to.have.property('user'); });" ] } } ]
+        },
+        {
+          "name": "用户登出",
+          "request": { 
+            "method": "POST", 
+            "header": [ { "key": "Content-Type", "value": "application/json" } ], 
+            "body": { "mode": "raw", "raw": "{}" },
+            "url": { "raw": "{{baseUrl}}/app/api/{{apiVersion}}/auth/logout", "host": ["{{baseUrl}}"], "path": ["app", "api", "{{apiVersion}}", "auth", "logout"] } 
+          },
+          "event": [ { "listen": "test", "script": { "type": "text/javascript", "exec": [ "const j = pm.response.json();", "pm.test('登出成功', () => { pm.expect(j.success).to.be.true; });", "pm.environment.unset('accessToken');", "pm.environment.unset('refreshToken');" ] } } ]
+        }
+      ]
+    },
+    {
+      "name": "🏗️ 军队管理",
+      "item": [
+        {
+          "name": "获取军队列表",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/app/api/{{apiVersion}}/armies?page=1&limit=20&townHall=15&sort=new",
+              "host": ["{{baseUrl}}"],
+              "path": ["app", "api", "{{apiVersion}}", "armies"],
+              "query": [ { "key": "page", "value": "1" }, { "key": "limit", "value": "20" }, { "key": "townHall", "value": "15" }, { "key": "sort", "value": "new" } ]
+            }
+          },
+          "event": [ { "listen": "test", "script": { "type": "text/javascript", "exec": [ "const j = pm.response.json();", "pm.test('列表成功', () => { pm.expect(j.success).to.be.true; pm.expect(j.data).to.be.an('array'); });", "if (j.data && j.data.length) pm.environment.set('armyId', j.data[0].id);" ] } } ]
+        },
+        {
+          "name": "创建军队",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"测试军队\",\n  \"townHall\": 15,\n  \"banner\": \"test-banner\",\n  \"units\": [ { \"unitId\": 1, \"home\": \"home\", \"amount\": 10 } ],\n  \"equipment\": [ { \"equipmentId\": 1 } ],\n  \"pets\": [ { \"petId\": 1, \"hero\": \"Archer Queen\" } ],\n  \"tags\": [\"attack\", \"defense\"],\n  \"guide\": { \"textContent\": \"军队使用说明\", \"youtubeUrl\": \"https://youtube.com/watch?v=...\" }\n}" },
+            "url": { "raw": "{{baseUrl}}/app/api/{{apiVersion}}/armies", "host": ["{{baseUrl}}"], "path": ["app", "api", "{{apiVersion}}", "armies"] }
+          },
+          "event": [ { "listen": "test", "script": { "type": "text/javascript", "exec": [ "const j = pm.response.json();", "pm.test('创建成功', () => { pm.expect(j.success).to.be.true; });", "if (j.data && j.data.armyId) pm.environment.set('armyId', j.data.armyId);" ] } } ]
+        },
+        {
+          "name": "获取军队详情",
+          "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/app/api/{{apiVersion}}/armies/{{armyId}}", "host": ["{{baseUrl}}"], "path": ["app", "api", "{{apiVersion}}", "armies", "{{armyId}}"] } },
+          "event": [ { "listen": "test", "script": { "type": "text/javascript", "exec": [ "const j = pm.response.json();", "pm.test('详情成功', () => { pm.expect(j.success).to.be.true; pm.expect(j.data).to.have.property('id'); });" ] } } ]
+        },
+        {
+          "name": "更新军队",
+          "request": {
+            "method": "PUT",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"更新后的军队名称\",\n  \"townHall\": 16,\n  \"banner\": \"new-banner\",\n  \"units\": [ { \"unitId\": 1, \"home\": \"home\", \"amount\": 15 } ],\n  \"equipment\": [],\n  \"pets\": [],\n  \"tags\": [\"attack\"],\n  \"guide\": null\n}" },
+            "url": { "raw": "{{baseUrl}}/app/api/{{apiVersion}}/armies/{{armyId}}", "host": ["{{baseUrl}}"], "path": ["app", "api", "{{apiVersion}}", "armies", "{{armyId}}"] }
+          },
+          "event": [ { "listen": "test", "script": { "type": "text/javascript", "exec": [ "const j = pm.response.json();", "pm.test('更新成功', () => { pm.expect(j.success).to.be.true; });" ] } } ]
+        },
+        {
+          "name": "删除军队",
+          "request": { "method": "DELETE", "header": [], "url": { "raw": "{{baseUrl}}/app/api/{{apiVersion}}/armies/{{armyId}}", "host": ["{{baseUrl}}"], "path": ["app", "api", "{{apiVersion}}", "armies", "{{armyId}}"] } },
+          "event": [ { "listen": "test", "script": { "type": "text/javascript", "exec": [ "const j = pm.response.json();", "pm.test('删除成功', () => { pm.expect(j.success).to.be.true; });" ] } } ]
+        }
+      ]
+    },
+    {
+      "name": "❤️ 互动功能",
+      "item": [
+        { "name": "点赞军队", "request": { "method": "POST", "header": [], "url": { "raw": "{{baseUrl}}/app/api/{{apiVersion}}/armies/{{armyId}}/like", "host": ["{{baseUrl}}"], "path": ["app", "api", "{{apiVersion}}", "armies", "{{armyId}}", "like"] } }, "event": [ { "listen": "test", "script": { "type": "text/javascript", "exec": [ "pm.test('点赞成功', () => pm.expect(pm.response.json().data.action).to.equal('like'));" ] } } ] },
+        { "name": "取消点赞", "request": { "method": "DELETE", "header": [], "url": { "raw": "{{baseUrl}}/app/api/{{apiVersion}}/armies/{{armyId}}/like", "host": ["{{baseUrl}}"], "path": ["app", "api", "{{apiVersion}}", "armies", "{{armyId}}", "like"] } }, "event": [ { "listen": "test", "script": { "type": "text/javascript", "exec": [ "pm.test('取消点赞', () => pm.expect(pm.response.json().data.action).to.equal('unlike'));" ] } } ] },
+        { "name": "反向点赞", "request": { "method": "POST", "header": [], "url": { "raw": "{{baseUrl}}/app/api/{{apiVersion}}/armies/{{armyId}}/dislike", "host": ["{{baseUrl}}"], "path": ["app", "api", "{{apiVersion}}", "armies", "{{armyId}}", "dislike"] } }, "event": [ { "listen": "test", "script": { "type": "text/javascript", "exec": [ "pm.test('反向点赞', () => pm.expect(pm.response.json().data.action).to.equal('dislike'));" ] } } ] },
+        { "name": "收藏军队", "request": { "method": "POST", "header": [], "url": { "raw": "{{baseUrl}}/app/api/{{apiVersion}}/armies/{{armyId}}/bookmark", "host": ["{{baseUrl}}"], "path": ["app", "api", "{{apiVersion}}", "armies", "{{armyId}}", "bookmark"] } }, "event": [ { "listen": "test", "script": { "type": "text/javascript", "exec": [ "pm.test('收藏', () => pm.expect(pm.response.json().data.action).to.equal('bookmark'));" ] } } ] },
+        { "name": "获取收藏军队列表", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/app/api/{{apiVersion}}/armies/bookmarked?page=1&limit=20&sort=new", "host": ["{{baseUrl}}"], "path": ["app", "api", "{{apiVersion}}", "armies", "bookmarked"], "query": [ { "key": "page", "value": "1" }, { "key": "limit", "value": "20" }, { "key": "sort", "value": "new" } ] } }, "event": [ { "listen": "test", "script": { "type": "text/javascript", "exec": [ "const j = pm.response.json();", "pm.test('收藏列表', () => { pm.expect(j.success).to.be.true; pm.expect(j.data).to.be.an('array'); });" ] } } ] }
+      ]
+    },
+    {
+      "name": "💬 评论系统",
+      "item": [
+        {
+          "name": "获取评论列表",
+          "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/app/api/{{apiVersion}}/armies/{{armyId}}/comments?page=1&limit=20", "host": ["{{baseUrl}}"], "path": ["app", "api", "{{apiVersion}}", "armies", "{{armyId}}", "comments"], "query": [ { "key": "page", "value": "1" }, { "key": "limit", "value": "20" } ] } },
+          "event": [ { "listen": "test", "script": { "type": "text/javascript", "exec": [ "const j = pm.response.json();", "pm.test('评论列表', () => { pm.expect(j.success).to.be.true; pm.expect(j.data).to.be.an('array'); });" ] } } ]
+        },
+        {
+          "name": "发表评论",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"comment\": \"这是一条测试评论\",\n  \"replyTo\": null\n}" },
+            "url": { "raw": "{{baseUrl}}/app/api/{{apiVersion}}/armies/{{armyId}}/comments", "host": ["{{baseUrl}}"], "path": ["app", "api", "{{apiVersion}}", "armies", "{{armyId}}", "comments"] }
+          },
+          "event": [ { "listen": "test", "script": { "type": "text/javascript", "exec": [ "const j = pm.response.json();", "pm.test('发表评论', () => { pm.expect(j.success).to.be.true; pm.expect(j.data).to.have.property('commentId'); });", "if (j.data && j.data.commentId) pm.environment.set('commentId', j.data.commentId);" ] } } ]
+        },
+        {
+          "name": "删除评论",
+          "request": { "method": "DELETE", "header": [], "url": { "raw": "{{baseUrl}}/app/api/{{apiVersion}}/armies/{{armyId}}/comments?commentId={{commentId}}", "host": ["{{baseUrl}}"], "path": ["app", "api", "{{apiVersion}}", "armies", "{{armyId}}", "comments"], "query": [ { "key": "commentId", "value": "{{commentId}}" } ] } },
+          "event": [ { "listen": "test", "script": { "type": "text/javascript", "exec": [ "pm.test('删除评论', () => pm.expect(pm.response.json().success).to.be.true);" ] } } ]
+        }
+      ]
+    },
+    {
+      "name": "👤 用户偏好设置",
+      "item": [
+        { "name": "获取用户资料", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/app/api/{{apiVersion}}/users/profile", "host": ["{{baseUrl}}"], "path": ["app", "api", "{{apiVersion}}", "users", "profile"] } }, "event": [ { "listen": "test", "script": { "type": "text/javascript", "exec": [ "pm.test('获取用户资料', () => pm.expect(pm.response.json().success).to.be.true);" ] } } ] },
+        { "name": "更新用户资料", "request": { "method": "PUT", "header": [ { "key": "Content-Type", "value": "application/json" } ], "body": { "mode": "raw", "raw": "{\n  \"username\": \"newusername\"\n}" }, "url": { "raw": "{{baseUrl}}/app/api/{{apiVersion}}/users/profile", "host": ["{{baseUrl}}"], "path": ["app", "api", "{{apiVersion}}", "users", "profile"] } }, "event": [ { "listen": "test", "script": { "type": "text/javascript", "exec": [ "pm.test('更新资料', () => pm.expect(pm.response.json().success).to.be.true);" ] } } ] }
+      ]
+    },
+    {
+      "name": "🎮 游戏数据",
+      "item": [
+        { "name": "获取单位数据", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/app/api/{{apiVersion}}/game/units", "host": ["{{baseUrl}}"], "path": ["app", "api", "{{apiVersion}}", "game", "units"] } }, "event": [ { "listen": "test", "script": { "type": "text/javascript", "exec": [ "pm.test('单位数据', () => pm.expect(pm.response.json().success).to.be.true);" ] } } ] },
+        { "name": "获取装备数据", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/app/api/{{apiVersion}}/game/equipment", "host": ["{{baseUrl}}"], "path": ["app", "api", "{{apiVersion}}", "game", "equipment"] } }, "event": [ { "listen": "test", "script": { "type": "text/javascript", "exec": [ "pm.test('装备数据', () => pm.expect(pm.response.json().success).to.be.true);" ] } } ] },
+        { "name": "获取宠物数据", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/app/api/{{apiVersion}}/game/pets", "host": ["{{baseUrl}}"], "path": ["app", "api", "{{apiVersion}}", "game", "pets"] } }, "event": [ { "listen": "test", "script": { "type": "text/javascript", "exec": [ "pm.test('宠物数据', () => pm.expect(pm.response.json().success).to.be.true);" ] } } ] },
+        { "name": "获取大本营数据", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/app/api/{{apiVersion}}/game/townhalls", "host": ["{{baseUrl}}"], "path": ["app", "api", "{{apiVersion}}", "game", "townhalls"] } }, "event": [ { "listen": "test", "script": { "type": "text/javascript", "exec": [ "pm.test('大本营数据', () => pm.expect(pm.response.json().success).to.be.true);" ] } } ] }
+      ]
+    },
+    {
+      "name": "🧪 测试工具",
+      "item": [ { "name": "健康检查", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/app/health", "host": ["{{baseUrl}}"], "path": ["app", "health"] } }, "event": [ { "listen": "test", "script": { "type": "text/javascript", "exec": [ "pm.response.to.have.status(200);" ] } } ] } ]
+    }
+  ]
+}
+
+

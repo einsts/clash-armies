@@ -84,6 +84,12 @@ const savedArmies = await req.locals.server.army.getSavedArmies(req, username);
 - ✅ 完善vote系统的三种状态支持
 - ✅ 更新接口文档和规范
 
+### 6. 认证系统分离 (已完成)
+- ✅ 修复APP接口被Web端认证拦截的问题
+- ✅ 实现APP和Web端认证系统的完全分离
+- ✅ 确保APP路由使用独立的JWT认证
+- ✅ 更新认证流程文档说明
+
 ## 📈 性能指标
 
 ### 响应时间
