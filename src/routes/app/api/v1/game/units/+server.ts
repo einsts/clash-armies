@@ -8,12 +8,6 @@ import { setCorsHeaders } from '$lib/app/middleware/cors';
 import { rateLimitMiddleware } from '$lib/app/middleware/rateLimit';
 import type { RequestEvent } from '@sveltejs/kit';
 
-import { createSuccessResponse } from '$lib/app/utils/response';
-import { createApiEndpoint } from '$lib/app/middleware/errorHandler';
-import { setCorsHeaders } from '$lib/app/middleware/cors';
-import { rateLimitMiddleware } from '$lib/app/middleware/rateLimit';
-import { initRequest } from '$lib/server/utils';
-import type { RequestEvent } from '@sveltejs/kit';
 
 export const GET = createApiEndpoint(async (req: RequestEvent) => {
   // 应用限流中间件
