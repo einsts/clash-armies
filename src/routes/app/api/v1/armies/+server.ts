@@ -54,7 +54,8 @@ export const GET = createApiEndpoint(async (req: RequestEvent) => {
     
     // 转换数据
     const transformer = new ArmyTransformer();
-    const appArmies = transformer.toAppFormatList(paginatedArmies as any);
+    const gameData = req.locals.server.army.gameData;
+    const appArmies = transformer.toAppFormatList(paginatedArmies as any, gameData);
     
     // 创建分页响应
     const response = createPaginatedResponse(
