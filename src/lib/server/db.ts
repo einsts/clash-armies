@@ -1,7 +1,7 @@
 import { env } from '$env/dynamic/private';
 import { MySQL } from '@ninjalib/sql';
 
-const { DB_USER, DB_PASSWORD, DB_PORT } = env;
+const { DB_USER, DB_PASSWORD, DB_PORT, DB_HOST } = env;
 
 if (typeof DB_USER !== 'string') {
 	throw new Error('Expected database user to be defined');
@@ -13,7 +13,9 @@ if (!DB_PORT || Number.isNaN(+DB_PORT)) {
 	throw new Error('Expected database port to be defined and a valid number');
 }
 
+
 export const db = new MySQL({
+	host: DB_HOST || 'localhost',  // 新增这行
 	user: DB_USER,
 	password: DB_PASSWORD,
 	port: +DB_PORT,
