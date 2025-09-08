@@ -267,46 +267,44 @@ Authorization: Bearer <access_token>
 
 #### 1. 获取军队列表
 ```http
-GET /app/api/v1/armies?page=1&limit=20&townHall=15&sort=new
+GET /app/api/v1/armies?townHall=15&sort=new&creator=testuser
 ```
 
 **查询参数**
 | 参数 | 类型 | 必填 | 说明 | 示例 |
 |------|------|------|------|------|
-| `page` | number | 否 | 页码，默认1 | `1` |
-| `limit` | number | 否 | 每页数量，默认20，最大100 | `20` |
 | `townHall` | number | 否 | 大本营等级过滤 | `15` |
-| `sort` | string | 否 | 排序方式：`new`(最新)、`score`(评分) | `new` |
+| `sort` | string | 否 | 排序方式：`new`(最新)、`score`(评分)，默认`new` | `new` |
 | `creator` | string | 否 | 创建者用户名过滤 | `testuser` |
 
 **响应示例**
 ```json
 {
   "success": true,
-  "data": [
-    {
-      "id": 1,
-      "name": "测试军队",
-      "townHall": 15,
-      "banner": "test-banner",
-      "score": 95.5,
-      "likes": 10,
-      "comments": 5,
-      "userBookmarked": false,
-      "createdBy": "testuser",
-      "createdTime": "2024-08-29T10:00:00.000Z"
-    }
-  ],
-  "pagination": {
-    "page": 1,
-    "limit": 20,
-    "total": 100,
-    "totalPages": 5,
-    "hasNext": true,
-    "hasPrev": false
+  "data": {
+    "data": [
+      {
+        "id": 1,
+        "name": "测试军队",
+        "townHall": 15,
+        "banner": "test-banner",
+        "score": 95.5,
+        "likes": 10,
+        "comments": 5,
+        "userBookmarked": false,
+        "createdBy": "testuser",
+        "createdTime": "2024-08-29T10:00:00.000Z"
+      }
+    ],
+    "total": 100
   }
 }
 ```
+
+**说明**
+- 接口返回所有匹配条件的军队数据，不进行服务端分页
+- 前端可根据需要自行实现分页逻辑
+- 响应中的`total`字段表示匹配条件的军队总数
 
 #### 2. 创建军队
 ```http
@@ -1055,7 +1053,7 @@ curl -X POST "http://localhost:5173/app/api/v1/auth/login" \
   -d '{"googleIdToken":"test_token"}' | jq '.'
 
 # 获取军队列表
-curl -s "http://localhost:5173/app/api/v1/armies?page=1&limit=5" | jq '.'
+curl -s "http://localhost:5173/app/api/v1/armies?townHall=15&sort=new" | jq '.'
 ```
 
 ---
@@ -1068,8 +1066,8 @@ curl -s "http://localhost:5173/app/api/v1/armies?page=1&limit=5" | jq '.'
 ### Q2: 如何实现自动Token刷新？
 **A**: 在请求拦截器中检查Token过期时间，提前刷新Token，或在收到过期错误时自动刷新。
 
-### Q3: 分页参数如何设置？
-**A**: 使用`page`和`limit`参数，`page`从1开始，`limit`建议设置为20-50。
+### Q3: 军队列表接口如何获取数据？
+**A**: 军队列表接口(`GET /app/api/v1/armies`)返回所有匹配条件的军队数据，不进行服务端分页。前端可根据需要自行实现分页逻辑。其他接口（如收藏列表、评论列表）仍支持分页参数。
 
 ### Q4: 如何处理网络错误？
 **A**: 实现重试机制，对于5xx错误可以重试，对于4xx错误需要检查请求参数。
