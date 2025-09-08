@@ -2,7 +2,7 @@
  * 军队列表接口
  */
 
-import { createSuccessResponse, createPaginatedResponse, createErrorResponse, createValidationErrorResponse } from '$lib/app/utils/response';
+import { createSuccessResponse, createErrorResponse, createValidationErrorResponse } from '$lib/app/utils/response';
 import { createApiEndpoint } from '$lib/app/middleware/errorHandler';
 import { setCorsHeaders } from '$lib/app/middleware/cors';
 import { requireAuth } from '$lib/app/middleware/auth';
@@ -11,16 +11,74 @@ import { ArmyTransformer } from '$lib/app/transformers';
 import type { RequestEvent } from '@sveltejs/kit';
 import { z } from 'zod';
 
-// 军队筛选参数验证schema
+// 军队筛选参数验证schema - 只保留实际支持的参数
 const armyFilterSchema = z.object({
-  page: z.coerce.number().min(1).default(1),
-  limit: z.coerce.number().min(1).max(100).default(20),
   townHall: z.coerce.number().min(1).max(17).optional(),
-  sort: z.enum(['new', 'score', 'popular', 'views', 'likes', 'comments']).default('new'),
-  tags: z.string().optional(), // 逗号分隔的标签
-  search: z.string().optional(),
-  creator: z.string().optional()
+  sort: z.enum(['new', 'score']).default('new'), // 只支持new和score
+  creator: z.string().optional() // 对应ArmyAPI中的username参数
 });
+
+// 备份：原始GET接口（包含假分页和无用参数）
+// export const GET_ORIGINAL = createApiEndpoint(async (req: RequestEvent) => {
+//   // 应用限流中间件
+//   rateLimitMiddleware({
+//     windowMs: 15 * 60 * 1000, // 15分钟
+//     maxRequests: 100 // 军队列表接口限制适中
+//   })(req);
+
+//   try {
+//     // 解析查询参数
+//     const url = new URL(req.request.url);
+//     const queryParams = Object.fromEntries(url.searchParams.entries());
+    
+//     // 验证查询参数
+//     const validatedParams = armyFilterSchema.parse(queryParams);
+    
+//     // req.locals.server 应该已经由 hooks.server.ts 初始化
+    
+//     // 直接复用现有 ArmyAPI.getArmies
+//     const armies = await req.locals.server.army.getArmies(req, {
+//       townHall: validatedParams.townHall,
+//       sort: validatedParams.sort === 'new' ? 'new' : 'score', // 只支持new和score
+//       username: validatedParams.creator
+//     });
+    
+//     // 手动实现分页（因为现有API不支持分页）
+//     const startIndex = (validatedParams.page - 1) * validatedParams.limit;
+//     const endIndex = startIndex + validatedParams.limit;
+//     const paginatedArmies = armies.slice(startIndex, endIndex);
+//     const total = armies.length;
+    
+//     // 转换数据
+//     const transformer = new ArmyTransformer();
+//     const gameData = req.locals.server.army.gameData;
+//     const appArmies = transformer.toAppFormatList(paginatedArmies as any, gameData);
+    
+//     // 创建分页响应
+//     const response = createPaginatedResponse(
+//       appArmies,
+//       validatedParams.page,
+//       validatedParams.limit,
+//       total
+//     );
+    
+//     setCorsHeaders(response);
+//     return response;
+    
+//   } catch (error) {
+//     if (error instanceof z.ZodError) {
+//       const response = createValidationErrorResponse(
+//         'VALIDATION_ERROR',
+//         '查询参数验证失败',
+//         error.errors
+//       );
+//       setCorsHeaders(response);
+//       return response;
+//     }
+    
+//     throw error; // 让错误处理中间件处理其他错误
+//   }
+// });
 
 export const GET = createApiEndpoint(async (req: RequestEvent) => {
   // 应用限流中间件
@@ -39,31 +97,23 @@ export const GET = createApiEndpoint(async (req: RequestEvent) => {
     
     // req.locals.server 应该已经由 hooks.server.ts 初始化
     
-    // 直接复用现有 ArmyAPI.getArmies
+    // 直接复用现有 ArmyAPI.getArmies，获取所有匹配的军队数据
     const armies = await req.locals.server.army.getArmies(req, {
       townHall: validatedParams.townHall,
-      sort: validatedParams.sort === 'new' ? 'new' : 'score', // 只支持new和score
+      sort: validatedParams.sort,
       username: validatedParams.creator
     });
-    
-    // 手动实现分页（因为现有API不支持分页）
-    const startIndex = (validatedParams.page - 1) * validatedParams.limit;
-    const endIndex = startIndex + validatedParams.limit;
-    const paginatedArmies = armies.slice(startIndex, endIndex);
-    const total = armies.length;
     
     // 转换数据
     const transformer = new ArmyTransformer();
     const gameData = req.locals.server.army.gameData;
-    const appArmies = transformer.toAppFormatList(paginatedArmies as any, gameData);
+    const appArmies = transformer.toAppFormatList(armies as any, gameData);
     
-    // 创建分页响应
-    const response = createPaginatedResponse(
-      appArmies,
-      validatedParams.page,
-      validatedParams.limit,
-      total
-    );
+    // 创建简单响应，不包含分页信息
+    const response = createSuccessResponse({
+      data: appArmies,
+      total: appArmies.length
+    });
     
     setCorsHeaders(response);
     return response;
