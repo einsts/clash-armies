@@ -44,10 +44,13 @@ export const GET = createApiEndpoint(async (req: RequestEvent) => {
     });
     
     // 移除数据转换，直接返回原始数据
-    const response = createSuccessResponse({
-      data: armies,  // 直接使用原始 Army[] 数据
-      total: armies.length
-    });
+    const response = createSuccessResponse(
+      {
+        data: armies,
+        total: armies.length
+      },
+      '获取军队列表成功'
+    );
     
     setCorsHeaders(response);
     return response;
@@ -97,7 +100,6 @@ export const POST = createApiEndpoint(async (req: RequestEvent) => {
     const armyId = await req.locals.server.army.saveArmy(req, armyData);
     
     const response = createSuccessResponse({
-      message: '军队创建成功',
       armyId: armyId,
       userId: user.userId,
       army: {
@@ -106,7 +108,7 @@ export const POST = createApiEndpoint(async (req: RequestEvent) => {
         townHall: armyData.townHall,
         banner: armyData.banner
       }
-    });
+    }, '军队创建成功');
     
     setCorsHeaders(response);
     return response;

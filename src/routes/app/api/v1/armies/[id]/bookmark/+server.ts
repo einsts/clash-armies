@@ -31,11 +31,10 @@ export const POST = createApiEndpoint(async (req: RequestEvent) => {
     await req.locals.server.army.bookmark(req, armyId);
     
     const response = createSuccessResponse({
-      message: '收藏成功',
       armyId: armyId,
       userId: user.userId,
       action: 'bookmark'
-    });
+    }, '收藏成功');
     
     setCorsHeaders(response);
     return response;
@@ -67,11 +66,10 @@ export const DELETE = createApiEndpoint(async (req: RequestEvent) => {
     await req.locals.server.army.removeBookmark(req, armyId);
     
     const response = createSuccessResponse({
-      message: '取消收藏成功',
       armyId: armyId,
       userId: user.userId,
       action: 'unbookmark'
-    });
+    }, '取消收藏成功');
     
     setCorsHeaders(response);
     return response;

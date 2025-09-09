@@ -111,7 +111,6 @@ export const POST = createApiEndpoint(async (req: RequestEvent) => {
     
     // 返回登录成功响应
     const response = createSuccessResponse({
-      message: '登录成功',
       accessToken,
       refreshToken,
       user: {
@@ -130,7 +129,7 @@ export const POST = createApiEndpoint(async (req: RequestEvent) => {
         accessToken: 15 * 60, // 15分钟
         refreshToken: 7 * 24 * 60 * 60, // 7天
       }
-    });
+    }, '登录成功');
     
     setCorsHeaders(response);
     return response;

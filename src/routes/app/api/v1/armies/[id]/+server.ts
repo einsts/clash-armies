@@ -83,7 +83,6 @@ export const PUT = createApiEndpoint(async (req: RequestEvent) => {
     await req.locals.server.army.saveArmy(req, armyData);
     
     const response = createSuccessResponse({
-      message: '军队更新成功',
       armyId: armyId,
       userId: user.userId,
       army: {
@@ -92,7 +91,7 @@ export const PUT = createApiEndpoint(async (req: RequestEvent) => {
         townHall: armyData.townHall,
         banner: armyData.banner
       }
-    });
+    }, '军队更新成功');
     
     setCorsHeaders(response);
     return response;
@@ -143,10 +142,9 @@ export const DELETE = createApiEndpoint(async (req: RequestEvent) => {
     await req.locals.server.army.deleteArmy(req, armyId);
     
     const response = createSuccessResponse({
-      message: '军队删除成功',
       armyId: armyId,
       userId: user.userId
-    });
+    }, '军队删除成功');
     
     setCorsHeaders(response);
     return response;

@@ -45,10 +45,9 @@ export const GET = createApiEndpoint(async (req: RequestEvent) => {
     const comments = army.comments || [];
     
     const response = createSuccessResponse({
-      message: '获取评论成功',
       data: comments,
       total: comments.length
-    });
+    }, '获取评论成功');
     
     setCorsHeaders(response);
     return response;
@@ -83,10 +82,9 @@ export const DELETE = createApiEndpoint(async (req: RequestEvent) => {
     await req.locals.server.army.deleteComment(req, commentId);
     
     const response = createSuccessResponse({
-      message: '评论删除成功',
       commentId: commentId,
       userId: user.userId
-    });
+    }, '评论删除成功');
     
     setCorsHeaders(response);
     return response;
@@ -128,13 +126,12 @@ export const POST = createApiEndpoint(async (req: RequestEvent) => {
     const commentId = await req.locals.server.army.saveComment(req, commentData);
     
     const response = createSuccessResponse({
-      message: '评论发表成功',
       commentId: commentId,
       armyId: armyId,
       userId: user.userId,
       comment: validatedData.comment,
       replyTo: validatedData.replyTo || null
-    });
+    }, '评论发表成功');
     
     setCorsHeaders(response);
     return response;

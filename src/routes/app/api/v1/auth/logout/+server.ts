@@ -40,9 +40,7 @@ export const POST = createApiEndpoint(async (req: RequestEvent) => {
     
     // TODO: 将Refresh Token加入黑名单
     
-    const response = createSuccessResponse({
-      message: '登出成功'
-    });
+    const response = createSuccessResponse({}, '登出成功');
     
     setCorsHeaders(response);
     return response;

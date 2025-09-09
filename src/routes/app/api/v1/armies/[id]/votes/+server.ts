@@ -38,7 +38,7 @@ export const POST = createApiEndpoint(async (req: RequestEvent) => {
 
     await req.locals.server.army.saveVote(req, { armyId, vote });
 
-    const response = createSuccessResponse({ message: '投票成功', armyId, vote });
+    const response = createSuccessResponse({ armyId, vote }, '投票成功');
     setCorsHeaders(response);
     return response;
   } catch (error) {

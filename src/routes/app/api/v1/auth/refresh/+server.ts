@@ -64,7 +64,7 @@ export const POST = createApiEndpoint(async (req: RequestEvent) => {
     const response = createSuccessResponse({
       accessToken: newAccessToken,
       refreshToken: newRefreshToken
-    });
+    }, '刷新成功');
     
     setCorsHeaders(response);
     return response;

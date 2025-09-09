@@ -2,20 +2,13 @@
  * 获取用户收藏的军队列表
  */
 
-import { createSuccessResponse, createErrorResponse } from '$lib/app/utils/response';
+import { createSuccessResponse } from '$lib/app/utils/response';
 import { createApiEndpoint } from '$lib/app/middleware/errorHandler';
 import { setCorsHeaders } from '$lib/app/middleware/cors';
 import { requireAuth } from '$lib/app/middleware/auth';
 import { rateLimitMiddleware } from '$lib/app/middleware/rateLimit';
 import type { RequestEvent } from '@sveltejs/kit';
-import { z } from 'zod';
-
-// 查询参数验证schema
-const querySchema = z.object({
-  page: z.coerce.number().min(1).default(1),
-  limit: z.coerce.number().min(1).max(100).default(20),
-  sort: z.enum(['new', 'score']).default('new'),
-});
+ 
 
 export const GET = createApiEndpoint(async (req: RequestEvent) => {
   // 应用限流中间件
@@ -23,88 +16,20 @@ export const GET = createApiEndpoint(async (req: RequestEvent) => {
     windowMs: 15 * 60 * 1000, // 15分钟
     maxRequests: 50 // 收藏列表接口限制适中
   })(req);
-
+ 
   try {
     // 验证用户身份
     const user = requireAuth(req);
-    
-    const url = new URL(req.request.url);
-    const queryParams = Object.fromEntries(url.searchParams.entries());
-    const validatedParams = querySchema.parse(queryParams);
 
+    // 通过 ArmyAPI 获取收藏军队（App 端自行分页，不在服务端分页）
+    const armies = await req.locals.server.army.getSavedArmies(req, { username: user.username });
 
-    
-    // 获取用户收藏的军队
-    // 直接使用用户ID查询，避免username不匹配的问题
-    const savedArmyIds = await req.locals.server.db.query<{ armyId: number }>(`
-      SELECT sa.armyId
-      FROM saved_armies sa
-      WHERE sa.userId = ?
-    `, [user.userId]);
-    
-    const savedArmyIdsArr = savedArmyIds.map((row) => row.armyId);
-    
-    if (!savedArmyIdsArr.length) {
-      // 如果没有收藏记录，返回空列表
-      const response = createSuccessResponse({
-        message: '获取收藏军队成功',
-        data: {
-          armies: [],
-          pagination: {
-            page: validatedParams.page,
-            limit: validatedParams.limit,
-            total: 0,
-            totalPages: 0,
-            hasNext: false,
-            hasPrev: false
-          }
-        }
-      });
-      setCorsHeaders(response);
-      return response;
-    }
-    
-    // 使用军队ID获取完整的军队信息
-    const savedArmies = await req.locals.server.army.getArmies(req, { ids: savedArmyIdsArr });
-    
-
-    
-    // 手动实现分页
-    const startIndex = (validatedParams.page - 1) * validatedParams.limit;
-    const endIndex = startIndex + validatedParams.limit;
-    const paginatedArmies = savedArmies.slice(startIndex, endIndex);
-    const total = savedArmies.length;
-
-    // 创建分页响应
-    const response = createSuccessResponse({
-      message: '获取收藏军队成功',
-      data: {
-        armies: paginatedArmies,
-        pagination: {
-          page: validatedParams.page,
-          limit: validatedParams.limit,
-          total,
-          totalPages: Math.ceil(total / validatedParams.limit),
-          hasNext: endIndex < total,
-          hasPrev: validatedParams.page > 1
-        }
-      }
-    });
+    const response = createSuccessResponse({ armies }, '获取收藏军队成功');
 
     setCorsHeaders(response);
     return response;
 
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      const response = createErrorResponse(
-        'VALIDATION_ERROR',
-        '查询参数验证失败',
-        error.errors
-      );
-      setCorsHeaders(response);
-      return response;
-    }
-
     throw error; // 让错误处理中间件处理
   }
 });
