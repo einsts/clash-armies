@@ -7,7 +7,6 @@ import { createApiEndpoint } from '$lib/app/middleware/errorHandler';
 import { setCorsHeaders } from '$lib/app/middleware/cors';
 import { requireAuth } from '$lib/app/middleware/auth';
 import { rateLimitMiddleware } from '$lib/app/middleware/rateLimit';
-import { ArmyTransformer } from '$lib/app/transformers';
 import type { RequestEvent } from '@sveltejs/kit';
 import { z } from 'zod';
 
@@ -18,68 +17,8 @@ const armyFilterSchema = z.object({
   creator: z.string().optional() // 对应ArmyAPI中的username参数
 });
 
-// 备份：原始GET接口（包含假分页和无用参数）
-// export const GET_ORIGINAL = createApiEndpoint(async (req: RequestEvent) => {
-//   // 应用限流中间件
-//   rateLimitMiddleware({
-//     windowMs: 15 * 60 * 1000, // 15分钟
-//     maxRequests: 100 // 军队列表接口限制适中
-//   })(req);
 
-//   try {
-//     // 解析查询参数
-//     const url = new URL(req.request.url);
-//     const queryParams = Object.fromEntries(url.searchParams.entries());
-    
-//     // 验证查询参数
-//     const validatedParams = armyFilterSchema.parse(queryParams);
-    
-//     // req.locals.server 应该已经由 hooks.server.ts 初始化
-    
-//     // 直接复用现有 ArmyAPI.getArmies
-//     const armies = await req.locals.server.army.getArmies(req, {
-//       townHall: validatedParams.townHall,
-//       sort: validatedParams.sort === 'new' ? 'new' : 'score', // 只支持new和score
-//       username: validatedParams.creator
-//     });
-    
-//     // 手动实现分页（因为现有API不支持分页）
-//     const startIndex = (validatedParams.page - 1) * validatedParams.limit;
-//     const endIndex = startIndex + validatedParams.limit;
-//     const paginatedArmies = armies.slice(startIndex, endIndex);
-//     const total = armies.length;
-    
-//     // 转换数据
-//     const transformer = new ArmyTransformer();
-//     const gameData = req.locals.server.army.gameData;
-//     const appArmies = transformer.toAppFormatList(paginatedArmies as any, gameData);
-    
-//     // 创建分页响应
-//     const response = createPaginatedResponse(
-//       appArmies,
-//       validatedParams.page,
-//       validatedParams.limit,
-//       total
-//     );
-    
-//     setCorsHeaders(response);
-//     return response;
-    
-//   } catch (error) {
-//     if (error instanceof z.ZodError) {
-//       const response = createValidationErrorResponse(
-//         'VALIDATION_ERROR',
-//         '查询参数验证失败',
-//         error.errors
-//       );
-//       setCorsHeaders(response);
-//       return response;
-//     }
-    
-//     throw error; // 让错误处理中间件处理其他错误
-//   }
-// });
-
+// src/routes/app/api/v1/armies/+server.ts
 export const GET = createApiEndpoint(async (req: RequestEvent) => {
   // 应用限流中间件
   rateLimitMiddleware({
@@ -104,21 +43,17 @@ export const GET = createApiEndpoint(async (req: RequestEvent) => {
       username: validatedParams.creator
     });
     
-    // 转换数据
-    const transformer = new ArmyTransformer();
-    const gameData = req.locals.server.army.gameData;
-    const appArmies = transformer.toAppFormatList(armies as any, gameData);
-    
-    // 创建简单响应，不包含分页信息
+    // 移除数据转换，直接返回原始数据
     const response = createSuccessResponse({
-      data: appArmies,
-      total: appArmies.length
+      data: armies,  // 直接使用原始 Army[] 数据
+      total: armies.length
     });
     
     setCorsHeaders(response);
     return response;
     
   } catch (error) {
+    // 错误处理保持不变
     if (error instanceof z.ZodError) {
       const response = createValidationErrorResponse(
         'VALIDATION_ERROR',

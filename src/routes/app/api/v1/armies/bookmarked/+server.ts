@@ -7,14 +7,11 @@ import { createApiEndpoint } from '$lib/app/middleware/errorHandler';
 import { setCorsHeaders } from '$lib/app/middleware/cors';
 import { requireAuth } from '$lib/app/middleware/auth';
 import { rateLimitMiddleware } from '$lib/app/middleware/rateLimit';
-import { ArmyTransformer } from '$lib/app/transformers/ArmyTransformer';
 import type { RequestEvent } from '@sveltejs/kit';
 import { z } from 'zod';
 
-// 查询参数验证schema
+// 查询参数验证schema - 移除分页参数，保持与前端一致
 const querySchema = z.object({
-  page: z.coerce.number().min(1).default(1),
-  limit: z.coerce.number().min(1).max(100).default(20),
   sort: z.enum(['new', 'score']).default('new'),
 });
 
@@ -51,14 +48,7 @@ export const GET = createApiEndpoint(async (req: RequestEvent) => {
         message: '获取收藏军队成功',
         data: {
           armies: [],
-          pagination: {
-            page: validatedParams.page,
-            limit: validatedParams.limit,
-            total: 0,
-            totalPages: 0,
-            hasNext: false,
-            hasPrev: false
-          }
+          total: 0
         }
       });
       setCorsHeaders(response);
@@ -67,32 +57,13 @@ export const GET = createApiEndpoint(async (req: RequestEvent) => {
     
     // 使用军队ID获取完整的军队信息
     const savedArmies = await req.locals.server.army.getArmies(req, { ids: savedArmyIdsArr });
-    
 
-    
-    // 手动实现分页
-    const startIndex = (validatedParams.page - 1) * validatedParams.limit;
-    const endIndex = startIndex + validatedParams.limit;
-    const paginatedArmies = savedArmies.slice(startIndex, endIndex);
-    const total = savedArmies.length;
-
-    // 转换数据格式
-    const transformer = new ArmyTransformer();
-    const appArmies = transformer.toAppFormatList(paginatedArmies as any);
-
-    // 创建分页响应
+    // 直接返回原始数据，不进行分页，保持与前端一致
     const response = createSuccessResponse({
       message: '获取收藏军队成功',
       data: {
-        armies: appArmies,
-        pagination: {
-          page: validatedParams.page,
-          limit: validatedParams.limit,
-          total,
-          totalPages: Math.ceil(total / validatedParams.limit),
-          hasNext: endIndex < total,
-          hasPrev: validatedParams.page > 1
-        }
+        armies: savedArmies,
+        total: savedArmies.length
       }
     });
 

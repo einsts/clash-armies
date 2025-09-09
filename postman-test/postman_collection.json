@@ -1,0 +1,581 @@
+{
+  "info": {
+    "name": "Clash Armies APP API",
+    "description": "Clash Armies 移动应用 API 接口集合",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://your-domain.com/app/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "accessToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "refreshToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "armyId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "commentId",
+      "value": "1",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "认证相关",
+      "item": [
+        {
+          "name": "用户登录",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idToken\": \"{{googleIdToken}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "刷新Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/refresh",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "refresh"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "用户登出",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"deviceId\": \"optional_device_id\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "logout"]
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// 登出成功后清除环境变量中的token",
+                  "if (pm.response.code === 200) {",
+                  "    pm.environment.set('accessToken', '');",
+                  "    pm.environment.set('refreshToken', '');",
+                  "    pm.environment.set('userId', '');",
+                  "    console.log('✅ Tokens cleared from environment');",
+                  "} else {",
+                  "    console.log('❌ Logout failed, tokens not cleared');",
+                  "}"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "用户相关",
+      "item": [
+        {
+          "name": "获取用户资料",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/users/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "profile"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "更新用户资料",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"new_username\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "profile"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "军队相关",
+      "item": [
+        {
+          "name": "获取军队列表",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/armies?townHall=15&sort=new&creator=username",
+              "host": ["{{baseUrl}}"],
+              "path": ["armies"],
+              "query": [
+                {
+                  "key": "townHall",
+                  "value": "15",
+                  "description": "大本营等级 (1-17)"
+                },
+                {
+                  "key": "sort",
+                  "value": "new",
+                  "description": "排序方式 (new|score)"
+                },
+                {
+                  "key": "creator",
+                  "value": "username",
+                  "description": "创建者用户名"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "创建军队",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"我的军队\",\n  \"townHall\": 15,\n  \"banner\": \"banner_image_url\",\n  \"units\": [\n    {\n      \"unitId\": 1,\n      \"level\": 10,\n      \"home\": 1\n    }\n  ],\n  \"equipment\": [\n    {\n      \"equipmentId\": 1,\n      \"level\": 5\n    }\n  ],\n  \"pets\": [\n    {\n      \"petId\": 1,\n      \"level\": 3\n    }\n  ],\n  \"tags\": [\"tag1\", \"tag2\"],\n  \"guide\": {\n    \"title\": \"攻略标题\",\n    \"content\": \"攻略内容\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/armies",
+              "host": ["{{baseUrl}}"],
+              "path": ["armies"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "获取军队详情",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/armies/{{armyId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["armies", "{{armyId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "更新军队",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"更新后的军队名称\",\n  \"townHall\": 16,\n  \"banner\": \"new_banner_image_url\",\n  \"units\": [\n    {\n      \"unitId\": 2,\n      \"level\": 12,\n      \"home\": 1\n    }\n  ],\n  \"equipment\": [\n    {\n      \"equipmentId\": 2,\n      \"level\": 6\n    }\n  ],\n  \"pets\": [\n    {\n      \"petId\": 2,\n      \"level\": 4\n    }\n  ],\n  \"tags\": [\"tag3\", \"tag4\"],\n  \"guide\": {\n    \"title\": \"更新后的攻略标题\",\n    \"content\": \"更新后的攻略内容\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/armies/{{armyId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["armies", "{{armyId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "删除军队",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/armies/{{armyId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["armies", "{{armyId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "收藏军队",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/armies/{{armyId}}/bookmark",
+              "host": ["{{baseUrl}}"],
+              "path": ["armies", "{{armyId}}", "bookmark"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "取消收藏军队",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/armies/{{armyId}}/bookmark",
+              "host": ["{{baseUrl}}"],
+              "path": ["armies", "{{armyId}}", "bookmark"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "获取收藏军队列表",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/armies/bookmarked?sort=new",
+              "host": ["{{baseUrl}}"],
+              "path": ["armies", "bookmarked"],
+              "query": [
+                {
+                  "key": "sort",
+                  "value": "new",
+                  "description": "排序方式 (new|score)"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "军队投票",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"armyId\": {{armyId}},\n  \"vote\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/armies/{{armyId}}/votes",
+              "host": ["{{baseUrl}}"],
+              "path": ["armies", "{{armyId}}", "votes"]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{accessToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "军队投票（无Token测试）",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"armyId\": {{armyId}},\n  \"vote\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/armies/{{armyId}}/votes",
+              "host": ["{{baseUrl}}"],
+              "path": ["armies", "{{armyId}}", "votes"]
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "发表评论",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"armyId\": {{armyId}},\n  \"comment\": \"这是一条评论\",\n  \"replyTo\": null\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/armies/{{armyId}}/comments",
+              "host": ["{{baseUrl}}"],
+              "path": ["armies", "{{armyId}}", "comments"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "删除评论",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{{commentId}}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/armies/{{armyId}}/comments",
+              "host": ["{{baseUrl}}"],
+              "path": ["armies", "{{armyId}}", "comments"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "游戏数据",
+      "item": [
+        {
+          "name": "获取单位数据",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/game/units",
+              "host": ["{{baseUrl}}"],
+              "path": ["game", "units"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "获取装备数据",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/game/equipment",
+              "host": ["{{baseUrl}}"],
+              "path": ["game", "equipment"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "获取宠物数据",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/game/pets",
+              "host": ["{{baseUrl}}"],
+              "path": ["game", "pets"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "获取大本营数据",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/game/townhalls",
+              "host": ["{{baseUrl}}"],
+              "path": ["game", "townhalls"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// 自动设置认证头（跳过无Token测试请求）",
+          "if (pm.environment.get('accessToken') && !pm.info.requestName.includes('无Token测试')) {",
+          "    pm.request.headers.add({",
+          "        key: 'Authorization',",
+          "        value: 'Bearer ' + pm.environment.get('accessToken')",
+          "    });",
+          "    console.log('Added Authorization header for:', pm.info.requestName);",
+          "} else if (pm.info.requestName.includes('无Token测试')) {",
+          "    console.log('Skipping Authorization header for no-token test:', pm.info.requestName);",
+          "}"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// 自动保存登录响应中的token",
+          "if (pm.response.code === 200) {",
+          "    const response = pm.response.json();",
+          "    if (response.data && response.data.accessToken) {",
+          "        pm.environment.set('accessToken', response.data.accessToken);",
+          "        console.log('Access Token saved:', response.data.accessToken);",
+          "    }",
+          "    if (response.data && response.data.refreshToken) {",
+          "        pm.environment.set('refreshToken', response.data.refreshToken);",
+          "        console.log('Refresh Token saved:', response.data.refreshToken);",
+          "    }",
+          "    if (response.data && response.data.armyId) {",
+          "        pm.environment.set('armyId', response.data.armyId);",
+          "        console.log('Army ID saved:', response.data.armyId);",
+          "    }",
+          "    if (response.data && response.data.id) {",
+          "        pm.environment.set('commentId', response.data.id);",
+          "        console.log('Comment ID saved:', response.data.id);",
+          "    }",
+          "    if (response.data && response.data.user && response.data.user.id) {",
+          "        pm.environment.set('userId', response.data.user.id);",
+          "        console.log('User ID saved:', response.data.user.id);",
+          "    }",
+          "}"
+        ]
+      }
+    }
+  ]
+}

@@ -3,5 +3,4 @@
  */
 
 export * from './BaseTransformer';
-export * from './ArmyTransformer';
 export * from './UserTransformer';
