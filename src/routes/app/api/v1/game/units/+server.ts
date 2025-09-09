@@ -19,10 +19,11 @@ export const GET = createApiEndpoint(async (req: RequestEvent) => {
   try {
     // req.locals.server 应该已经由 hooks.server.ts 初始化
     
-    // 直接复用现有游戏数据API获取单位数据
-    const units = await req.locals.server.army.getUnitsData();
+    // 使用缓存的静态单位数据
+    const units = req.locals.server.army.units;
     
     const response = createSuccessResponse(units);
+    response.headers.set('Cache-Control', 'public, max-age=86400, immutable');
     setCorsHeaders(response);
     return response;
     

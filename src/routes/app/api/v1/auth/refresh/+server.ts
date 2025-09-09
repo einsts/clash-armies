@@ -7,6 +7,7 @@ import { createApiEndpoint } from '$lib/app/middleware/errorHandler';
 import { setCorsHeaders } from '$lib/app/middleware/cors';
 import { rateLimitMiddleware } from '$lib/app/middleware/rateLimit';
 import { verifyRefreshToken, generateAccessToken, generateRefreshToken } from '$lib/app/middleware/auth';
+import { db } from '$server/db';
 import type { RequestEvent } from '@sveltejs/kit';
 import { z } from 'zod';
 
@@ -38,13 +39,22 @@ export const POST = createApiEndpoint(async (req: RequestEvent) => {
     }
     
     // 检查Token版本（用于撤销功能）
-    // TODO: 从数据库检查Token版本是否匹配
+    // 这里假设有 user_refresh_tokens 表维护版本；若无则保留内存/其他实现
+    // 尝试读取用户与角色信息
+    const userRow = await db.getRow<{ id: number; username: string }>('users', { id: decoded.userId });
+    if (!userRow) {
+      const response = createAuthErrorResponse('USER_NOT_FOUND', '用户不存在');
+      setCorsHeaders(response);
+      return response;
+    }
+    const userRoles = await db.getRows<{ role: string }>('user_roles', { userId: decoded.userId });
+    const roles = userRoles.map((r) => r.role);
     
     // 生成新的Token对
     const newAccessToken = generateAccessToken({
       userId: decoded.userId,
-      username: 'user', // 这里需要从数据库获取用户名
-      roles: ['user'] // 这里需要从数据库获取角色
+      username: userRow.username,
+      roles,
     });
     
     const newRefreshToken = generateRefreshToken(decoded.userId, decoded.tokenVersion + 1);

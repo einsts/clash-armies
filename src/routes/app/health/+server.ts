@@ -7,13 +7,7 @@ import { createApiEndpoint } from '$lib/app/middleware/errorHandler';
 import { setCorsHeaders } from '$lib/app/middleware/cors';
 import type { RequestEvent } from '@sveltejs/kit';
 
-// 导入限流存储（仅开发环境）
-let rateLimitStore: any = null;
-if (process.env.NODE_ENV === 'development') {
-  // 动态导入限流存储
-  const rateLimitModule = await import('$lib/app/middleware/rateLimit');
-  // 注意：这里需要访问内部的 rateLimitStore
-}
+// 移除无用的动态导入，避免未使用代码
 
 export const GET = createApiEndpoint(async (req: RequestEvent) => {
   try {
@@ -33,7 +27,7 @@ export const GET = createApiEndpoint(async (req: RequestEvent) => {
       status: 'healthy',
       timestamp: new Date().toISOString(),
       environment: process.env.NODE_ENV || 'development',
-      version: '1.0.0',
+      version: process.env.APP_VERSION || process.env.npm_package_version || 'unknown',
       rateLimit: rateLimitInfo
     });
     

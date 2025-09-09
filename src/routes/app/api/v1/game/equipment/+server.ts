@@ -6,7 +6,6 @@ import { createSuccessResponse } from '$lib/app/utils/response';
 import { createApiEndpoint } from '$lib/app/middleware/errorHandler';
 import { setCorsHeaders } from '$lib/app/middleware/cors';
 import { rateLimitMiddleware } from '$lib/app/middleware/rateLimit';
-import { initRequest } from '$lib/server/utils';
 import type { RequestEvent } from '@sveltejs/kit';
 
 export const GET = createApiEndpoint(async (req: RequestEvent) => {
@@ -19,10 +18,12 @@ export const GET = createApiEndpoint(async (req: RequestEvent) => {
   try {
     // req.locals.server 应该已经由 hooks.server.ts 初始化
     
-    // 直接复用现有游戏数据API获取装备数据
-    const equipment = await req.locals.server.army.getEquipmentData();
+    // 使用缓存的静态装备数据
+    const equipment = req.locals.server.army.equipment;
     
     const response = createSuccessResponse(equipment);
+    // 缓存静态游戏数据 1 天
+    response.headers.set('Cache-Control', 'public, max-age=86400, immutable');
     setCorsHeaders(response);
     return response;
     

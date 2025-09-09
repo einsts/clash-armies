@@ -6,7 +6,6 @@ import { createSuccessResponse } from '$lib/app/utils/response';
 import { createApiEndpoint } from '$lib/app/middleware/errorHandler';
 import { setCorsHeaders } from '$lib/app/middleware/cors';
 import { rateLimitMiddleware } from '$lib/app/middleware/rateLimit';
-import { initRequest } from '$lib/server/utils';
 import type { RequestEvent } from '@sveltejs/kit';
 
 export const GET = createApiEndpoint(async (req: RequestEvent) => {
@@ -19,10 +18,11 @@ export const GET = createApiEndpoint(async (req: RequestEvent) => {
   try {
     // req.locals.server 应该已经由 hooks.server.ts 初始化
     
-    // 直接复用现有游戏数据API获取宠物数据
-    const pets = await req.locals.server.army.getPetsData();
+    // 使用缓存的静态宠物数据
+    const pets = req.locals.server.army.pets;
     
     const response = createSuccessResponse(pets);
+    response.headers.set('Cache-Control', 'public, max-age=86400, immutable');
     setCorsHeaders(response);
     return response;
     

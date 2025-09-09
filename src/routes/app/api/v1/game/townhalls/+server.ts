@@ -18,10 +18,11 @@ export const GET = createApiEndpoint(async (req: RequestEvent) => {
   try {
     // req.locals.server 应该已经由 hooks.server.ts 初始化
     
-    // 直接复用现有游戏数据API获取大本营数据
-    const townHalls = await req.locals.server.army.getTownHallsData();
+    // 使用缓存的静态大本营数据
+    const townHalls = req.locals.server.army.townHalls;
     
     const response = createSuccessResponse(townHalls);
+    response.headers.set('Cache-Control', 'public, max-age=86400, immutable');
     setCorsHeaders(response);
     return response;
     
