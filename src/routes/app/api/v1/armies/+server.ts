@@ -80,7 +80,7 @@ export const POST = createApiEndpoint(async (req: RequestEvent) => {
     const user = requireAuth(req);
     
     const body = await req.request.json();
-    
+
     // 验证军队数据
     const armyData = {
       name: body.name,
@@ -112,6 +112,15 @@ export const POST = createApiEndpoint(async (req: RequestEvent) => {
     return response;
     
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      const response = createValidationErrorResponse(
+        'VALIDATION_ERROR',
+        '军队数据验证失败',
+        error.errors
+      );
+      setCorsHeaders(response);
+      return response;
+    }
     if (error instanceof Error) {
       const response = createErrorResponse(
         'ARMY_CREATION_ERROR',

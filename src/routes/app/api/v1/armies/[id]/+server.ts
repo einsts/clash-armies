@@ -2,12 +2,13 @@
  * 军队详情接口
  */
 
-import { createSuccessResponse, createErrorResponse } from '$lib/app/utils/response';
+import { createSuccessResponse, createErrorResponse, createValidationErrorResponse } from '$lib/app/utils/response';
 import { createApiEndpoint } from '$lib/app/middleware/errorHandler';
 import { setCorsHeaders } from '$lib/app/middleware/cors';
 import { requireAuth } from '$lib/app/middleware/auth';
 import { rateLimitMiddleware } from '$lib/app/middleware/rateLimit';
 import type { RequestEvent } from '@sveltejs/kit';
+import { z } from 'zod';
 
 export const GET = createApiEndpoint(async (req: RequestEvent) => {
   // 应用限流中间件
@@ -97,6 +98,15 @@ export const PUT = createApiEndpoint(async (req: RequestEvent) => {
     return response;
     
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      const response = createValidationErrorResponse(
+        'VALIDATION_ERROR',
+        '军队数据验证失败',
+        error.errors
+      );
+      setCorsHeaders(response);
+      return response;
+    }
     if (error instanceof Error) {
       const response = createErrorResponse(
         'ARMY_UPDATE_ERROR',

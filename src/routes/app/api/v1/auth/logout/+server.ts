@@ -2,10 +2,11 @@
  * 用户登出接口
  */
 
-import { createSuccessResponse } from '$lib/app/utils/response';
+import { createSuccessResponse, createAuthErrorResponse } from '$lib/app/utils/response';
 import { createApiEndpoint } from '$lib/app/middleware/errorHandler';
 import { setCorsHeaders } from '$lib/app/middleware/cors';
 import { requireAuth } from '$lib/app/middleware/auth';
+import { rateLimitMiddleware } from '$lib/app/middleware/rateLimit';
 import type { RequestEvent } from '@sveltejs/kit';
 import { z } from 'zod';
 
@@ -15,6 +16,11 @@ const logoutSchema = z.object({
 });
 
 export const POST = createApiEndpoint(async (req: RequestEvent) => {
+  // 应用限流中间件
+  rateLimitMiddleware({
+    windowMs: 15 * 60 * 1000, // 15分钟
+    maxRequests: 20 // 登出接口限制适中
+  })(req);
   try {
     // 验证用户身份
     const user = requireAuth(req);
