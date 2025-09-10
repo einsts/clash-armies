@@ -21,7 +21,9 @@ APP 端使用 JWT (JSON Web Token) 进行身份认证：
 {
   "success": true,
   "data": <响应数据>,
-  "message": "操作成功"
+  "message": "操作成功",
+  "timestamp": "2024-01-01T00:00:00.000Z",
+  "requestId": "uuid-string"
 }
 ```
 
@@ -33,7 +35,9 @@ APP 端使用 JWT (JSON Web Token) 进行身份认证：
     "code": "ERROR_CODE",
     "message": "错误描述",
     "details": "详细错误信息"
-  }
+  },
+  "timestamp": "2024-01-01T00:00:00.000Z",
+  "requestId": "uuid-string"
 }
 ```
 
@@ -58,7 +62,6 @@ APP 端使用 JWT (JSON Web Token) 进行身份认证：
 {
   "success": true,
   "data": {
-    "message": "登录成功",
     "accessToken": "jwt_access_token",
     "refreshToken": "jwt_refresh_token",
     "user": {
@@ -77,7 +80,10 @@ APP 端使用 JWT (JSON Web Token) 进行身份认证：
       "accessToken": 900,
       "refreshToken": 604800
     }
-  }
+  },
+  "message": "登录成功",
+  "timestamp": "2024-01-01T00:00:00.000Z",
+  "requestId": "uuid-string"
 }
 ```
 
@@ -100,7 +106,10 @@ APP 端使用 JWT (JSON Web Token) 进行身份认证：
   "data": {
     "accessToken": "new_jwt_access_token",
     "refreshToken": "new_jwt_refresh_token"
-  }
+  },
+  "message": "刷新成功",
+  "timestamp": "2024-01-01T00:00:00.000Z",
+  "requestId": "uuid-string"
 }
 ```
 
@@ -120,9 +129,10 @@ APP 端使用 JWT (JSON Web Token) 进行身份认证：
 ```json
 {
   "success": true,
-  "data": {
-    "message": "登出成功"
-  }
+  "data": {},
+  "message": "登出成功",
+  "timestamp": "2024-01-01T00:00:00.000Z",
+  "requestId": "uuid-string"
 }
 ```
 
@@ -145,7 +155,9 @@ APP 端使用 JWT (JSON Web Token) 进行身份认证：
       "playerTag": null,
       "roles": ["user"]
     }
-  }
+  },
+  "timestamp": "2024-01-01T00:00:00.000Z",
+  "requestId": "uuid-string"
 }
 ```
 
@@ -171,7 +183,9 @@ APP 端使用 JWT (JSON Web Token) 进行身份认证：
       "id": 123,
       "username": "new_username"
     }
-  }
+  },
+  "timestamp": "2024-01-01T00:00:00.000Z",
+  "requestId": "uuid-string"
 }
 ```
 
@@ -212,7 +226,10 @@ APP 端使用 JWT (JSON Web Token) 进行身份认证：
       }
     ],
     "total": 100
-  }
+  },
+  "message": "获取军队列表成功",
+  "timestamp": "2024-01-01T00:00:00.000Z",
+  "requestId": "uuid-string"
 }
 ```
 
@@ -259,7 +276,6 @@ APP 端使用 JWT (JSON Web Token) 进行身份认证：
 {
   "success": true,
   "data": {
-    "message": "军队创建成功",
     "armyId": 123,
     "userId": 456,
     "army": {
@@ -268,7 +284,10 @@ APP 端使用 JWT (JSON Web Token) 进行身份认证：
       "townHall": 15,
       "banner": "banner_image_url"
     }
-  }
+  },
+  "message": "军队创建成功",
+  "timestamp": "2024-01-01T00:00:00.000Z",
+  "requestId": "uuid-string"
 }
 ```
 
@@ -278,23 +297,28 @@ APP 端使用 JWT (JSON Web Token) 进行身份认证：
 **响应**:
 ```json
 {
-  "id": 1,
-  "name": "军队名称",
-  "townHall": 15,
-  "banner": "banner_image_url",
-  "units": [...],
-  "equipment": [...],
-  "pets": [...],
-  "tags": [...],
-  "guide": {...},
-  "comments": [...],
-  "score": 100,
-  "votes": 10,
-  "pageViews": 50,
-  "openLinkClicks": 5,
-  "copyLinkClicks": 3,
-  "username": "creator_username",
-  "createdAt": "2024-01-01T00:00:00Z"
+  "success": true,
+  "data": {
+    "id": 1,
+    "name": "军队名称",
+    "townHall": 15,
+    "banner": "banner_image_url",
+    "units": [...],
+    "equipment": [...],
+    "pets": [...],
+    "tags": [...],
+    "guide": {...},
+    "comments": [...],
+    "score": 100,
+    "votes": 10,
+    "pageViews": 50,
+    "openLinkClicks": 5,
+    "copyLinkClicks": 3,
+    "username": "creator_username",
+    "createdAt": "2024-01-01T00:00:00Z"
+  },
+  "timestamp": "2024-01-01T00:00:00.000Z",
+  "requestId": "uuid-string"
 }
 ```
 
@@ -308,7 +332,20 @@ APP 端使用 JWT (JSON Web Token) 进行身份认证：
 **响应**:
 ```json
 {
-  "armyId": 123
+  "success": true,
+  "data": {
+    "armyId": 123,
+    "userId": 456,
+    "army": {
+      "id": 123,
+      "name": "军队名称",
+      "townHall": 15,
+      "banner": "banner_image_url"
+    }
+  },
+  "message": "军队更新成功",
+  "timestamp": "2024-01-01T00:00:00.000Z",
+  "requestId": "uuid-string"
 }
 ```
 
@@ -319,7 +356,16 @@ APP 端使用 JWT (JSON Web Token) 进行身份认证：
 
 **响应**:
 ```json
-{}
+{
+  "success": true,
+  "data": {
+    "armyId": 123,
+    "userId": 456
+  },
+  "message": "军队删除成功",
+  "timestamp": "2024-01-01T00:00:00.000Z",
+  "requestId": "uuid-string"
+}
 ```
 
 #### 3.6 收藏军队
@@ -329,7 +375,17 @@ APP 端使用 JWT (JSON Web Token) 进行身份认证：
 
 **响应**:
 ```json
-{}
+{
+  "success": true,
+  "data": {
+    "armyId": 123,
+    "userId": 456,
+    "action": "bookmark"
+  },
+  "message": "收藏成功",
+  "timestamp": "2024-01-01T00:00:00.000Z",
+  "requestId": "uuid-string"
+}
 ```
 
 #### 3.7 取消收藏军队
@@ -339,7 +395,17 @@ APP 端使用 JWT (JSON Web Token) 进行身份认证：
 
 **响应**:
 ```json
-{}
+{
+  "success": true,
+  "data": {
+    "armyId": 123,
+    "userId": 456,
+    "action": "unbookmark"
+  },
+  "message": "取消收藏成功",
+  "timestamp": "2024-01-01T00:00:00.000Z",
+  "requestId": "uuid-string"
+}
 ```
 
 #### 3.8 获取收藏军队列表
@@ -347,20 +413,17 @@ APP 端使用 JWT (JSON Web Token) 进行身份认证：
 
 **请求头**: `Authorization: Bearer <access_token>`
 
-**查询参数**:
-- `sort` (可选): 排序方式 (`new` | `score`)，默认 `new`
-
 **响应**:
 ```json
 {
   "success": true,
   "data": {
-    "message": "获取收藏军队成功",
-    "data": {
-      "armies": [...],
-      "total": 10
-    }
-  }
+    "armies": [...],
+    "total": 10
+  },
+  "message": "获取收藏军队成功",
+  "timestamp": "2024-01-01T00:00:00.000Z",
+  "requestId": "uuid-string"
 }
 ```
 
@@ -372,7 +435,6 @@ APP 端使用 JWT (JSON Web Token) 进行身份认证：
 **请求体**:
 ```json
 {
-  "armyId": 123,
   "vote": 1
 }
 ```
@@ -384,10 +446,46 @@ APP 端使用 JWT (JSON Web Token) 进行身份认证：
 
 **响应**:
 ```json
-{}
+{
+  "success": true,
+  "data": {
+    "armyId": 123,
+    "vote": 1
+  },
+  "message": "投票成功",
+  "timestamp": "2024-01-01T00:00:00.000Z",
+  "requestId": "uuid-string"
+}
 ```
 
-#### 3.10 发表评论
+#### 3.10 获取军队评论
+**GET** `/armies/{id}/comments`
+
+**响应**:
+```json
+{
+  "success": true,
+  "data": {
+    "data": [
+      {
+        "id": 456,
+        "armyId": 123,
+        "comment": "评论内容",
+        "replyTo": null,
+        "userId": 789,
+        "username": "commenter_username",
+        "createdAt": "2024-01-01T00:00:00Z"
+      }
+    ],
+    "total": 5
+  },
+  "message": "获取评论成功",
+  "timestamp": "2024-01-01T00:00:00.000Z",
+  "requestId": "uuid-string"
+}
+```
+
+#### 3.11 发表评论
 **POST** `/armies/{id}/comments`
 
 **请求头**: `Authorization: Bearer <access_token>`
@@ -395,7 +493,6 @@ APP 端使用 JWT (JSON Web Token) 进行身份认证：
 **请求体**:
 ```json
 {
-  "armyId": 123,
   "comment": "评论内容",
   "replyTo": null
 }
@@ -404,29 +501,61 @@ APP 端使用 JWT (JSON Web Token) 进行身份认证：
 **响应**:
 ```json
 {
-  "id": 456
+  "success": true,
+  "data": {
+    "commentId": 456,
+    "armyId": 123,
+    "userId": 789,
+    "comment": "评论内容",
+    "replyTo": null
+  },
+  "message": "评论发表成功",
+  "timestamp": "2024-01-01T00:00:00.000Z",
+  "requestId": "uuid-string"
 }
 ```
 
-#### 3.11 删除评论
-**DELETE** `/armies/{id}/comments`
+#### 3.12 删除评论
+**DELETE** `/armies/{id}/comments?commentId=456`
 
 **请求头**: `Authorization: Bearer <access_token>`
 
-**请求体**:
-```json
-123
-```
-
 **响应**:
 ```json
-{}
+{
+  "success": true,
+  "data": {
+    "commentId": 456,
+    "userId": 789
+  },
+  "message": "评论删除成功",
+  "timestamp": "2024-01-01T00:00:00.000Z",
+  "requestId": "uuid-string"
+}
 ```
 
 ### 4. 游戏数据接口
 
-#### 4.1 获取单位数据
-**GET** `/game/units`
+#### 4.1 获取所有游戏数据
+**GET** `/gamedata`
+
+**响应**:
+```json
+{
+  "success": true,
+  "data": {
+    "units": [...],
+    "equipment": [...],
+    "pets": [...],
+    "townHalls": [...]
+  },
+  "timestamp": "2024-01-01T00:00:00.000Z",
+  "requestId": "uuid-string"
+}
+```
+
+#### 4.2 获取单位数据
+**GET** `/gamedata/units`
 
 **响应**:
 ```json
@@ -441,12 +570,14 @@ APP 端使用 JWT (JSON Web Token) 进行身份认证：
       "townHall": 12,
       "image": "unit_image_url"
     }
-  ]
+  ],
+  "timestamp": "2024-01-01T00:00:00.000Z",
+  "requestId": "uuid-string"
 }
 ```
 
-#### 4.2 获取装备数据
-**GET** `/game/equipment`
+#### 4.3 获取装备数据
+**GET** `/gamedata/equipment`
 
 **响应**:
 ```json
@@ -461,12 +592,14 @@ APP 端使用 JWT (JSON Web Token) 进行身份认证：
       "townHall": 12,
       "image": "equipment_image_url"
     }
-  ]
+  ],
+  "timestamp": "2024-01-01T00:00:00.000Z",
+  "requestId": "uuid-string"
 }
 ```
 
-#### 4.3 获取宠物数据
-**GET** `/game/pets`
+#### 4.4 获取宠物数据
+**GET** `/gamedata/pets`
 
 **响应**:
 ```json
@@ -481,12 +614,14 @@ APP 端使用 JWT (JSON Web Token) 进行身份认证：
       "townHall": 12,
       "image": "pet_image_url"
     }
-  ]
+  ],
+  "timestamp": "2024-01-01T00:00:00.000Z",
+  "requestId": "uuid-string"
 }
 ```
 
-#### 4.4 获取大本营数据
-**GET** `/game/townhalls`
+#### 4.5 获取大本营数据
+**GET** `/gamedata/townhalls`
 
 **响应**:
 ```json
@@ -499,7 +634,36 @@ APP 端使用 JWT (JSON Web Token) 进行身份认证：
       "maxLevel": 17,
       "image": "townhall_image_url"
     }
-  ]
+  ],
+  "timestamp": "2024-01-01T00:00:00.000Z",
+  "requestId": "uuid-string"
+}
+```
+
+### 5. 系统接口
+
+#### 5.1 健康检查
+**GET** `/health`
+
+**响应**:
+```json
+{
+  "success": true,
+  "data": {
+    "message": "APP服务正常运行",
+    "status": "healthy",
+    "timestamp": "2024-01-01T00:00:00.000Z",
+    "environment": "development",
+    "version": "1.0.0",
+    "rateLimit": {
+      "message": "限流状态查询功能已启用",
+      "note": "当前为开发环境，使用内存存储",
+      "storage": "Node.js 进程内存",
+      "cleanup": "每小时自动清理过期记录"
+    }
+  },
+  "timestamp": "2024-01-01T00:00:00.000Z",
+  "requestId": "uuid-string"
 }
 ```
 
@@ -507,19 +671,24 @@ APP 端使用 JWT (JSON Web Token) 进行身份认证：
 
 | 错误码 | 描述 | HTTP状态码 |
 |--------|------|------------|
-| `VALIDATION_ERROR` | 请求参数验证失败 | 400 |
-| `AUTHENTICATION_REQUIRED` | 需要身份认证 | 401 |
+| `VALIDATION_ERROR` | 请求参数验证失败 | 422 |
+| `UNAUTHORIZED` | 需要身份认证 | 401 |
 | `TOKEN_INVALID` | Token无效或已过期 | 401 |
 | `TOKEN_EXPIRED` | Token已过期 | 401 |
 | `GOOGLE_AUTH_FAILED` | Google认证失败 | 401 |
 | `USER_NOT_FOUND` | 用户不存在 | 404 |
 | `ARMY_NOT_FOUND` | 军队不存在 | 404 |
+| `INVALID_ARMY_ID` | 无效的军队ID | 400 |
+| `INVALID_COMMENT_ID` | 无效的评论ID | 400 |
 | `ARMY_CREATION_ERROR` | 军队创建失败 | 400 |
 | `ARMY_UPDATE_ERROR` | 军队更新失败 | 400 |
 | `ARMY_DELETE_ERROR` | 军队删除失败 | 400 |
+| `PROFILE_GET_ERROR` | 获取用户资料失败 | 400 |
 | `PROFILE_UPDATE_ERROR` | 用户资料更新失败 | 400 |
 | `RATE_LIMIT_EXCEEDED` | 请求频率超限 | 429 |
-| `INTERNAL_SERVER_ERROR` | 服务器内部错误 | 500 |
+| `FORBIDDEN` | 权限不足 | 403 |
+| `INTERNAL_ERROR` | 服务器内部错误 | 500 |
+| `UNKNOWN_ERROR` | 未知错误 | 500 |
 
 ## 限流规则
 
@@ -529,8 +698,12 @@ APP 端使用 JWT (JSON Web Token) 进行身份认证：
 | 军队列表 | 15分钟 | 100次 |
 | 军队详情 | 15分钟 | 200次 |
 | 军队操作 | 15分钟 | 10次 |
+| 军队投票 | 15分钟 | 50次 |
+| 军队评论 | 15分钟 | 10次 |
 | 用户资料 | 15分钟 | 50次 |
 | 游戏数据 | 15分钟 | 50次 |
+| 统一游戏数据 | 15分钟 | 100次 |
+| 健康检查 | 无限制 | - |
 
 ## 数据模型
 
@@ -611,7 +784,35 @@ interface ArmyGuide {
 }
 ```
 
+### User 用户模型
+```typescript
+interface User {
+  id: number;
+  username: string;
+  playerTag: string | null;
+  roles: string[];
+  googleId: string;
+  googleEmail: string;
+  name: string;
+  picture: string;
+}
+```
+
+## 缓存策略
+
+- **游戏数据接口**: 设置 `Cache-Control: public, max-age=86400, immutable` (1天)
+- **其他接口**: 不设置缓存头，由客户端自行处理
+
 ## 更新日志
+
+### v2.0.0 (2024-01-01)
+- 重构响应格式，增加 `timestamp` 和 `requestId` 字段
+- 优化错误处理，统一错误响应格式
+- 增加健康检查接口
+- 增加统一游戏数据接口
+- 优化限流策略，按接口类型设置不同限制
+- 完善评论系统，支持回复功能
+- 改进投票系统，支持三种投票状态
 
 ### v1.0.0 (2024-01-01)
 - 初始版本发布
