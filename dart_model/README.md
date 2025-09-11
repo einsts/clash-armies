@@ -15,6 +15,8 @@ dart_model/
 ├── comment_model.dart   # 评论模型类
 ├── army_model.dart      # 军队主模型类
 ├── utils.dart           # 工具类和常量
+├── game_utils.dart      # 游戏工具类（链接生成和解析）
+├── example_usage.dart   # 使用示例
 ├── models.dart          # 统一导出文件
 └── README.md           # 说明文档
 ```
@@ -104,6 +106,23 @@ armyModel.comments.add(comment);
 final structured = CommentModel.structureComments(armyModel.comments);
 ```
 
+### 6. 生成和解析军队链接
+
+```dart
+// 生成军队链接
+final armyLink = GameUtils.generateLink(armyModel);
+print("军队链接: $armyLink");
+
+// 解析军队链接
+final parsedArmy = GameUtils.parseLink(armyLink, gameData);
+
+// 复制链接到剪贴板
+await GameUtils.copyLink(armyModel);
+
+// 在游戏中打开
+GameUtils.openInGame(armyModel);
+```
+
 ## 核心特性
 
 ### 1. 完全对应前端模型
@@ -165,6 +184,14 @@ final structured = CommentModel.structureComments(armyModel.comments);
 - 评论内容
 - 回复关系
 - 结构化显示
+
+### GameUtils
+游戏工具类，处理 Clash of Clans 军队链接：
+- 生成军队链接
+- 解析军队链接
+- 链接验证
+- 剪贴板操作
+- 军队描述生成
 
 ## 注意事项
 

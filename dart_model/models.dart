@@ -17,3 +17,4 @@ export 'army_model.dart';
 
 // 工具类
 export 'utils.dart';
+export 'game_utils.dart';
