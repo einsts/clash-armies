@@ -24,7 +24,10 @@ export const GET = createApiEndpoint(async (req: RequestEvent) => {
     // 通过 ArmyAPI 获取收藏军队（App 端自行分页，不在服务端分页）
     const armies = await req.locals.server.army.getSavedArmies(req, { username: user.username });
 
-    const response = createSuccessResponse({ armies }, '获取收藏军队成功');
+    const response = createSuccessResponse({
+      data: armies,
+      total: armies.length
+    }, '获取收藏军队成功');
 
     setCorsHeaders(response);
     return response;

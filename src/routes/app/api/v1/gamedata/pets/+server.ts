@@ -21,7 +21,7 @@ export const GET = createApiEndpoint(async (req: RequestEvent) => {
     // 使用缓存的静态宠物数据
     const pets = req.locals.server.army.pets;
     
-    const response = createSuccessResponse(pets);
+    const response = createSuccessResponse(pets, '获取宠物数据成功');
     response.headers.set('Cache-Control', 'public, max-age=86400, immutable');
     setCorsHeaders(response);
     return response;

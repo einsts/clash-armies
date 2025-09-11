@@ -21,7 +21,7 @@ export const GET = createApiEndpoint(async (req: RequestEvent) => {
     // 使用缓存的静态大本营数据
     const townHalls = req.locals.server.army.townHalls;
     
-    const response = createSuccessResponse(townHalls);
+    const response = createSuccessResponse(townHalls, '获取大本营数据成功');
     response.headers.set('Cache-Control', 'public, max-age=86400, immutable');
     setCorsHeaders(response);
     return response;

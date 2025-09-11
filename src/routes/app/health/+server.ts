@@ -23,13 +23,11 @@ export const GET = createApiEndpoint(async (req: RequestEvent) => {
     }
 
     const response = createSuccessResponse({
-      message: 'APP服务正常运行',
       status: 'healthy',
-      timestamp: new Date().toISOString(),
       environment: process.env.NODE_ENV || 'development',
       version: process.env.APP_VERSION || process.env.npm_package_version || 'unknown',
       rateLimit: rateLimitInfo
-    });
+    }, 'APP服务正常运行');
     
     setCorsHeaders(response);
     return response;

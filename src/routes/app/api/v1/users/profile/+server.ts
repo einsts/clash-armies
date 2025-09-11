@@ -37,14 +37,13 @@ export const GET = createApiEndpoint(async (req: RequestEvent) => {
     }
     
     const response = createSuccessResponse({
-      message: '获取用户资料成功',
       user: {
         id: userProfile.id,
         username: userProfile.username,
         playerTag: userProfile.playerTag,
         roles: userProfile.roles
       }
-    });
+    }, '获取用户资料成功');
     
     setCorsHeaders(response);
     return response;

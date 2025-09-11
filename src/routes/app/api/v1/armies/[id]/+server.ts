@@ -36,8 +36,8 @@ export const GET = createApiEndpoint(async (req: RequestEvent) => {
       return response;
     }
     
-    // 直接返回原始数据
-    const response = createSuccessResponse(army);
+    // 返回标准格式的军队详情数据
+    const response = createSuccessResponse(army, '获取军队详情成功');
     setCorsHeaders(response);
     return response;
     

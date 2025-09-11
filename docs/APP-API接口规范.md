@@ -148,7 +148,6 @@ APP 端使用 JWT (JSON Web Token) 进行身份认证：
 {
   "success": true,
   "data": {
-    "message": "获取用户资料成功",
     "user": {
       "id": 123,
       "username": "Warrior-123",
@@ -156,6 +155,7 @@ APP 端使用 JWT (JSON Web Token) 进行身份认证：
       "roles": ["user"]
     }
   },
+  "message": "获取用户资料成功",
   "timestamp": "2024-01-01T00:00:00.000Z",
   "requestId": "uuid-string"
 }
@@ -317,6 +317,7 @@ APP 端使用 JWT (JSON Web Token) 进行身份认证：
     "username": "creator_username",
     "createdAt": "2024-01-01T00:00:00Z"
   },
+  "message": "获取军队详情成功",
   "timestamp": "2024-01-01T00:00:00.000Z",
   "requestId": "uuid-string"
 }
@@ -418,7 +419,7 @@ APP 端使用 JWT (JSON Web Token) 进行身份认证：
 {
   "success": true,
   "data": {
-    "armies": [...],
+    "data": [...],
     "total": 10
   },
   "message": "获取收藏军队成功",
@@ -549,6 +550,7 @@ APP 端使用 JWT (JSON Web Token) 进行身份认证：
     "pets": [...],
     "townHalls": [...]
   },
+  "message": "获取游戏数据成功",
   "timestamp": "2024-01-01T00:00:00.000Z",
   "requestId": "uuid-string"
 }
@@ -571,6 +573,7 @@ APP 端使用 JWT (JSON Web Token) 进行身份认证：
       "image": "unit_image_url"
     }
   ],
+  "message": "获取单位数据成功",
   "timestamp": "2024-01-01T00:00:00.000Z",
   "requestId": "uuid-string"
 }
@@ -593,6 +596,7 @@ APP 端使用 JWT (JSON Web Token) 进行身份认证：
       "image": "equipment_image_url"
     }
   ],
+  "message": "获取装备数据成功",
   "timestamp": "2024-01-01T00:00:00.000Z",
   "requestId": "uuid-string"
 }
@@ -615,6 +619,7 @@ APP 端使用 JWT (JSON Web Token) 进行身份认证：
       "image": "pet_image_url"
     }
   ],
+  "message": "获取宠物数据成功",
   "timestamp": "2024-01-01T00:00:00.000Z",
   "requestId": "uuid-string"
 }
@@ -635,6 +640,7 @@ APP 端使用 JWT (JSON Web Token) 进行身份认证：
       "image": "townhall_image_url"
     }
   ],
+  "message": "获取大本营数据成功",
   "timestamp": "2024-01-01T00:00:00.000Z",
   "requestId": "uuid-string"
 }
@@ -650,9 +656,7 @@ APP 端使用 JWT (JSON Web Token) 进行身份认证：
 {
   "success": true,
   "data": {
-    "message": "APP服务正常运行",
     "status": "healthy",
-    "timestamp": "2024-01-01T00:00:00.000Z",
     "environment": "development",
     "version": "1.0.0",
     "rateLimit": {
@@ -662,6 +666,7 @@ APP 端使用 JWT (JSON Web Token) 进行身份认证：
       "cleanup": "每小时自动清理过期记录"
     }
   },
+  "message": "APP服务正常运行",
   "timestamp": "2024-01-01T00:00:00.000Z",
   "requestId": "uuid-string"
 }

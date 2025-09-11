@@ -22,7 +22,7 @@ export const GET = createApiEndpoint(async (req: RequestEvent) => {
     // 使用缓存的静态单位数据
     const units = req.locals.server.army.units;
     
-    const response = createSuccessResponse(units);
+    const response = createSuccessResponse(units, '获取单位数据成功');
     response.headers.set('Cache-Control', 'public, max-age=86400, immutable');
     setCorsHeaders(response);
     return response;

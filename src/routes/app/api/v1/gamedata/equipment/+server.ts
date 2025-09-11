@@ -21,7 +21,7 @@ export const GET = createApiEndpoint(async (req: RequestEvent) => {
     // 使用缓存的静态装备数据
     const equipment = req.locals.server.army.equipment;
     
-    const response = createSuccessResponse(equipment);
+    const response = createSuccessResponse(equipment, '获取装备数据成功');
     // 缓存静态游戏数据 1 天
     response.headers.set('Cache-Control', 'public, max-age=86400, immutable');
     setCorsHeaders(response);
