@@ -81,10 +81,10 @@ function shouldAllowOrigin(origin: string, allowedOrigins: string | string[] | b
 /**
  * 设置CORS头到响应
  */
-export function setCorsHeaders(response: Response, config: Partial<CorsConfig> = {}): void {
+export function setCorsHeaders(response: Response, req?: RequestEvent, config: Partial<CorsConfig> = {}): void {
   const finalConfig = { ...DEFAULT_CORS_CONFIG, ...config };
   
-  const origin = response.headers.get('Origin');
+  const origin = req?.request.headers.get('Origin') ?? response.headers.get('Origin');
   if (origin && shouldAllowOrigin(origin, finalConfig.origin)) {
     response.headers.set('Access-Control-Allow-Origin', origin);
   }

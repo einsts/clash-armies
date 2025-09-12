@@ -10,9 +10,25 @@
 
 APP 端使用 JWT (JSON Web Token) 进行身份认证：
 
-- **Access Token**: 用于API请求认证，有效期15分钟
-- **Refresh Token**: 用于刷新Access Token，有效期7天
+- **Access Token**: 用于API请求认证，有效期30分钟
+- **Refresh Token**: 用于刷新Access Token，有效期30天
 - **请求头**: `Authorization: Bearer <access_token>`
+
+### 刷新与旋转规则
+
+- 刷新成功后会“旋转”Refresh Token：服务器返回新的 `refreshToken`，客户端必须用新值覆盖旧值。
+- 旧的 Refresh Token 在旋转后立即失效；再次使用旧 token 将返回 `401 TOKEN_INVALID`。
+- 并发刷新导致版本冲突时将返回 `401 TOKEN_INVALID`，客户端可重试一次。
+
+### CORS 与预检
+
+- 所有接口支持 `OPTIONS` 预检请求，返回 204 并带 CORS 头。
+- `Access-Control-Allow-Origin` 按请求 `Origin` 回显；允许方法：`GET, POST, PUT, DELETE, OPTIONS`；允许头：`Content-Type, Authorization`。
+- APP 侧不依赖 Web Cookie。
+
+### JWT 密钥要求（服务端）
+
+- 需要配置环境变量：`APP_JWT_SECRET` 与 `APP_REFRESH_SECRET`；缺失会导致服务启动失败。
 
 ## 通用响应格式
 
@@ -75,10 +91,9 @@ APP 端使用 JWT (JSON Web Token) 进行身份认证：
       "name": "User Name",
       "picture": "https://profile_picture_url"
     },
-    "sessionId": "lucia_session_id",
     "expiresIn": {
-      "accessToken": 900,
-      "refreshToken": 604800
+      "accessToken": 1800,
+      "refreshToken": 2592000
     }
   },
   "message": "登录成功",
@@ -105,13 +120,20 @@ APP 端使用 JWT (JSON Web Token) 进行身份认证：
   "success": true,
   "data": {
     "accessToken": "new_jwt_access_token",
-    "refreshToken": "new_jwt_refresh_token"
+    "refreshToken": "new_jwt_refresh_token",
+    "expiresIn": {
+      "accessToken": 1800,
+      "refreshToken": 2592000
+    }
   },
   "message": "刷新成功",
   "timestamp": "2024-01-01T00:00:00.000Z",
   "requestId": "uuid-string"
 }
 ```
+**说明**:
+- 刷新成功会返回一对新的 AT/RT，客户端必须替换本地保存的 `refreshToken`。
+- 若使用旧 `refreshToken` 再次调用，将返回 `401 TOKEN_INVALID`。
 
 #### 1.3 用户登出
 **POST** `/auth/logout`

@@ -10,7 +10,8 @@ import { rateLimitMiddleware } from '$lib/app/middleware/rateLimit';
 import { generateAccessToken, generateRefreshToken } from '$lib/app/middleware/auth';
 import { verifyGoogleIdToken, extractUserInfoFromToken } from '$lib/app/utils/googleAuth';
 import { db } from '$server/db';
-import { lucia } from '$server/auth/lucia';
+import { getUserRoles } from '$lib/app/server/users';
+import { initRefreshState } from '$lib/app/server/refreshTokens';
 import type { RequestEvent } from '@sveltejs/kit';
 import { z } from 'zod';
 import type { GoogleIdTokenLoginRequest } from '$lib/app/types/auth';
@@ -53,9 +54,8 @@ export const POST = createApiEndpoint(async (req: RequestEvent) => {
       userId = existingUser.id;
       username = existingUser.username;
       
-      // 获取用户角色
-      const userRoles = await db.getRows<{ role: string }>('user_roles', { userId: existingUser.id });
-      roles = userRoles.map(ur => ur.role);
+      // 获取用户角色（复用函数）
+      roles = await getUserRoles(existingUser.id);
       
       // 如果邮箱有变化，更新数据库
       if (existingUser.googleEmail !== userInfo.email) {
@@ -97,17 +97,13 @@ export const POST = createApiEndpoint(async (req: RequestEvent) => {
       roles = ['user'];
     }
     
-    // 创建Lucia会话（保持与Web端兼容）
-    const session = await lucia.createSession(userId, {});
-    
-    // 生成APP端JWT Token
-    const accessToken = generateAccessToken({
-      userId,
-      username,
-      roles,
-    });
-    
-    const refreshToken = generateRefreshToken(userId, 1);
+    // 初始化用户 refresh token 状态并生成 jti
+    const jti = crypto.randomUUID();
+    await initRefreshState(userId, { initialVersion: 1, jti });
+
+    // 生成APP端JWT Token（加入 jti）
+    const accessToken = generateAccessToken({ userId, username, roles, jti });
+    const refreshToken = generateRefreshToken(userId, 1, jti);
     
     // 返回登录成功响应
     const response = createSuccessResponse({
@@ -124,14 +120,16 @@ export const POST = createApiEndpoint(async (req: RequestEvent) => {
         name: userInfo.name,
         picture: userInfo.picture,
       },
-      sessionId: session.id,
+      // APP 不依赖 Web cookie，移除 Lucia/sessionId
       expiresIn: {
-        accessToken: 15 * 60, // 15分钟
-        refreshToken: 7 * 24 * 60 * 60, // 7天
+        accessToken: 30 * 60, // 30分钟
+        refreshToken: 30 * 24 * 60 * 60, // 30天
       }
     }, '登录成功');
     
-    setCorsHeaders(response);
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate');
+    response.headers.set('Pragma', 'no-cache');
+    setCorsHeaders(response, req);
     return response;
     
   } catch (error: unknown) {
@@ -141,7 +139,9 @@ export const POST = createApiEndpoint(async (req: RequestEvent) => {
         '登录数据验证失败',
         error.errors
       );
-      setCorsHeaders(response);
+      response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate');
+      response.headers.set('Pragma', 'no-cache');
+      setCorsHeaders(response, req);
       return response;
     }
     
@@ -152,7 +152,9 @@ export const POST = createApiEndpoint(async (req: RequestEvent) => {
         'Google认证失败，请重新登录',
         { details: error.message }
       );
-      setCorsHeaders(response);
+      response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate');
+      response.headers.set('Pragma', 'no-cache');
+      setCorsHeaders(response, req);
       return response;
     }
     
@@ -162,7 +164,17 @@ export const POST = createApiEndpoint(async (req: RequestEvent) => {
       'LOGIN_FAILED',
       '登录失败，请稍后重试'
     );
-    setCorsHeaders(response);
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate');
+    response.headers.set('Pragma', 'no-cache');
+    setCorsHeaders(response, req);
     return response;
   }
 });
+
+export const OPTIONS = async (req: RequestEvent) => {
+  const response = new Response(null, { status: 204 });
+  response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate');
+  response.headers.set('Pragma', 'no-cache');
+  setCorsHeaders(response);
+  return response;
+};

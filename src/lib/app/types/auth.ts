@@ -8,6 +8,7 @@ export interface AccessToken {
   userId: number;
   username: string;
   roles: string[];
+  jti?: string;
   exp: number;
   iat: number;
 }
@@ -15,6 +16,7 @@ export interface AccessToken {
 export interface RefreshToken {
   userId: number;
   tokenVersion: number;
+  jti?: string;
   exp: number;
   iat: number;
 }

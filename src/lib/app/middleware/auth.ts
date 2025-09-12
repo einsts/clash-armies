@@ -5,11 +5,14 @@
 import jwt from 'jsonwebtoken';
 import { env } from '$env/dynamic/private';
 import type { RequestEvent } from '@sveltejs/kit';
-import type { AccessToken } from '../types/auth';
+import type { AccessToken, RefreshToken } from '../types/auth';
 import { createAuthErrorResponse } from '../utils/response';
 
-const JWT_SECRET = env.APP_JWT_SECRET || 'fallback-secret';
-const JWT_REFRESH_SECRET = env.APP_REFRESH_SECRET || 'fallback-refresh-secret';
+if (!env.APP_JWT_SECRET || !env.APP_REFRESH_SECRET) {
+  throw new Error('Missing APP_JWT_SECRET or APP_REFRESH_SECRET');
+}
+const JWT_SECRET = env.APP_JWT_SECRET!;
+const JWT_REFRESH_SECRET = env.APP_REFRESH_SECRET!;
 
 /**
  * 验证Access Token
@@ -26,9 +29,9 @@ export function verifyAccessToken(token: string): AccessToken | null {
 /**
  * 验证Refresh Token
  */
-export function verifyRefreshToken(token: string): any {
+export function verifyRefreshToken(token: string): RefreshToken | null {
   try {
-    const decoded = jwt.verify(token, JWT_REFRESH_SECRET);
+    const decoded = jwt.verify(token, JWT_REFRESH_SECRET) as RefreshToken;
     return decoded;
   } catch (error) {
     return null;
@@ -38,18 +41,20 @@ export function verifyRefreshToken(token: string): any {
 /**
  * 生成Access Token
  */
-export function generateAccessToken(payload: Omit<AccessToken, 'exp' | 'iat'>): string {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: '15m' });
+export function generateAccessToken(payload: Omit<AccessToken, 'exp' | 'iat'> & { jti?: string }): string {
+  // 若 payload 已包含 jti，则不再通过 options.jwtid 传入，避免与 payload 冲突
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: '30m' });
 }
 
 /**
  * 生成Refresh Token
  */
-export function generateRefreshToken(userId: number, tokenVersion: number): string {
+export function generateRefreshToken(userId: number, tokenVersion: number, jti?: string): string {
+  // 仅将 jti 放入 payload，不再通过 options.jwtid 传入
   return jwt.sign(
-    { userId, tokenVersion },
+    { userId, tokenVersion, jti },
     JWT_REFRESH_SECRET,
-    { expiresIn: '7d' }
+    { expiresIn: '30d' }
   );
 }
 
