@@ -89,33 +89,47 @@ export function initRequest(req: RequestEvent, server: Server, isAppRoute: boole
 	
 	// 为APP路由提供不同的认证函数
 	if (isAppRoute) {
-		// APP路由使用JWT认证，但需要兼容现有的API调用
-		req.locals.hasAuth = () => false; // APP路由不使用Web端认证
+		// APP路由使用JWT认证：解析Bearer Token并填充locals.user
+		const authHeader = req.request.headers.get('Authorization');
+		let appUser: { id: number; username: string; roles: string[] } | null = null;
+		if (authHeader && authHeader.startsWith('Bearer ')) {
+			const token = authHeader.substring(7);
+			const decoded = verifyAccessToken(token);
+			if (decoded) {
+				appUser = {
+					id: decoded.userId,
+					username: decoded.username,
+					roles: decoded.roles,
+				};
+			}
+		}
+		// 将解析结果映射为与Web一致的locals.user结构（最小字段集）
+		req.locals.user = appUser
+			? { id: appUser.id, username: appUser.username, roles: appUser.roles, playerTag: null }
+			: null;
+		req.locals.session = null; // APP路由不使用Web会话
+
+		// 兼容现有调用：复用Web端的检查函数，但require函数需要APP端实现
+		req.locals.hasAuth = () => hasAuth(req);
 		req.locals.requireAuth = () => {
-			// 检查是否有JWT token
-			const authHeader = req.request.headers.get('Authorization');
-			if (!authHeader || !authHeader.startsWith('Bearer ')) {
+			if (!req.locals.user) {
 				throw new Error('Authentication required');
 			}
-			
-			const token = authHeader.substring(7);
-			// 使用APP的JWT验证函数
-			const decoded = verifyAccessToken(token);
-			if (!decoded) {
-				throw new Error('Invalid or expired token');
-			}
-			
-			// 转换为User类型
-			return { 
-				id: decoded.userId, 
-				username: decoded.username, 
-				roles: decoded.roles, 
-				playerTag: null, 
-				level: null 
-			};
+			return req.locals.user;
 		};
-		req.locals.hasRoles = () => false;
-		req.locals.requireRoles = () => { throw new Error('Use APP auth middleware instead'); };
+		req.locals.hasRoles = (...roles: string[]) => hasRoles(req, ...roles);
+		req.locals.requireRoles = (...roles: string[]) => {
+			const user = req.locals.user;
+			if (!user) {
+				throw new Error('Authentication required');
+			}
+			const ok = roles.every((r) => user.roles.includes(r));
+			if (!ok) {
+				throw new Error('Insufficient permissions');
+			}
+			return user;
+		};
+
 	} else {
 		// Web路由使用Web端认证
 		req.locals.hasAuth = () => hasAuth(req);
