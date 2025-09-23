@@ -89,12 +89,11 @@ export const PUT = createApiEndpoint(async (req: RequestEvent) => {
     await req.locals.server.user.saveUser(req, userData);
     
     const response = createSuccessResponse({
-      message: '用户资料更新成功',
       user: {
         id: user.userId,
         username: validatedData.username
       }
-    });
+    }, '用户资料更新成功');
     
     setCorsHeaders(response);
     

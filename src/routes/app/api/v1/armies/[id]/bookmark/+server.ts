@@ -32,7 +32,6 @@ export const POST = createApiEndpoint(async (req: RequestEvent) => {
     
     const response = createSuccessResponse({
       armyId: armyId,
-      userId: user.userId,
       action: 'bookmark'
     }, '收藏成功');
     
@@ -67,7 +66,6 @@ export const DELETE = createApiEndpoint(async (req: RequestEvent) => {
     
     const response = createSuccessResponse({
       armyId: armyId,
-      userId: user.userId,
       action: 'unbookmark'
     }, '取消收藏成功');
     

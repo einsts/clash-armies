@@ -25,7 +25,7 @@ export const GET = createApiEndpoint(async (req: RequestEvent) => {
     const armies = await req.locals.server.army.getSavedArmies(req, { username: user.username });
 
     const response = createSuccessResponse({
-      data: armies,
+      armies: armies,
       total: armies.length
     }, '获取收藏军队成功');
 

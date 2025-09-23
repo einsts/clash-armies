@@ -46,7 +46,7 @@ export const GET = createApiEndpoint(async (req: RequestEvent) => {
     // 移除数据转换，直接返回原始数据
     const response = createSuccessResponse(
       {
-        data: armies,
+        armies: armies,
         total: armies.length
       },
       '获取军队列表成功'
@@ -100,8 +100,6 @@ export const POST = createApiEndpoint(async (req: RequestEvent) => {
     const armyId = await req.locals.server.army.saveArmy(req, armyData);
     
     const response = createSuccessResponse({
-      armyId: armyId,
-      userId: user.userId,
       army: {
         id: armyId,
         name: armyData.name,

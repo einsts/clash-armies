@@ -43,6 +43,17 @@ APP 端使用 JWT (JSON Web Token) 进行身份认证：
 }
 ```
 
+### 统一命名与响应约定
+
+- 顶层字段恒定：`success`、`data`、`message`、`timestamp`、`requestId`。
+- `message` 一律位于顶层，`data` 内不再放置 `message`。
+- 资源命名：
+  - 列表返回使用复数名：如 `armies`、`comments`，并配套 `total`。
+  - 详情或创建/更新返回资源对象使用单数名：如 `army`、`user`。
+- 创建与更新：`data` 内仅返回完整资源对象（如 `army`、`user`）。如需 ID，请从资源对象字段获取，不再重复返回 `armyId`、`userId` 等顶层同义字段。
+- 删除：`data` 内返回被删除资源的主键 ID（如 `armyId` 或 `commentId`）。
+- 计数/状态类：按需返回语义化字段（如 `vote`）。
+
 ### 错误响应
 ```json
 {
@@ -200,12 +211,12 @@ APP 端使用 JWT (JSON Web Token) 进行身份认证：
 {
   "success": true,
   "data": {
-    "message": "用户资料更新成功",
     "user": {
       "id": 123,
       "username": "new_username"
     }
   },
+  "message": "用户资料更新成功",
   "timestamp": "2024-01-01T00:00:00.000Z",
   "requestId": "uuid-string"
 }
@@ -226,7 +237,7 @@ APP 端使用 JWT (JSON Web Token) 进行身份认证：
 {
   "success": true,
   "data": {
-    "data": [
+    "armies": [
       {
         "id": 1,
         "name": "军队名称",
@@ -298,8 +309,6 @@ APP 端使用 JWT (JSON Web Token) 进行身份认证：
 {
   "success": true,
   "data": {
-    "armyId": 123,
-    "userId": 456,
     "army": {
       "id": 123,
       "name": "军队名称",
@@ -357,8 +366,6 @@ APP 端使用 JWT (JSON Web Token) 进行身份认证：
 {
   "success": true,
   "data": {
-    "armyId": 123,
-    "userId": 456,
     "army": {
       "id": 123,
       "name": "军队名称",
@@ -382,8 +389,7 @@ APP 端使用 JWT (JSON Web Token) 进行身份认证：
 {
   "success": true,
   "data": {
-    "armyId": 123,
-    "userId": 456
+    "armyId": 123
   },
   "message": "军队删除成功",
   "timestamp": "2024-01-01T00:00:00.000Z",
@@ -441,7 +447,7 @@ APP 端使用 JWT (JSON Web Token) 进行身份认证：
 {
   "success": true,
   "data": {
-    "data": [...],
+    "armies": [...],
     "total": 10
   },
   "message": "获取收藏军队成功",
@@ -489,7 +495,7 @@ APP 端使用 JWT (JSON Web Token) 进行身份认证：
 {
   "success": true,
   "data": {
-    "data": [
+    "comments": [
       {
         "id": 456,
         "armyId": 123,
@@ -526,11 +532,13 @@ APP 端使用 JWT (JSON Web Token) 进行身份认证：
 {
   "success": true,
   "data": {
-    "commentId": 456,
-    "armyId": 123,
-    "userId": 789,
-    "comment": "评论内容",
-    "replyTo": null
+    "comment": {
+      "id": 456,
+      "armyId": 123,
+      "userId": 789,
+      "comment": "评论内容",
+      "replyTo": null
+    }
   },
   "message": "评论发表成功",
   "timestamp": "2024-01-01T00:00:00.000Z",
@@ -548,8 +556,7 @@ APP 端使用 JWT (JSON Web Token) 进行身份认证：
 {
   "success": true,
   "data": {
-    "commentId": 456,
-    "userId": 789
+    "commentId": 456
   },
   "message": "评论删除成功",
   "timestamp": "2024-01-01T00:00:00.000Z",

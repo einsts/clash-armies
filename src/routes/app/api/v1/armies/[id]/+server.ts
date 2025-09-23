@@ -83,8 +83,6 @@ export const PUT = createApiEndpoint(async (req: RequestEvent) => {
     await req.locals.server.army.saveArmy(req, armyData);
     
     const response = createSuccessResponse({
-      armyId: armyId,
-      userId: user.userId,
       army: {
         id: armyId,
         name: armyData.name,
@@ -142,8 +140,7 @@ export const DELETE = createApiEndpoint(async (req: RequestEvent) => {
     await req.locals.server.army.deleteArmy(req, armyId);
     
     const response = createSuccessResponse({
-      armyId: armyId,
-      userId: user.userId
+      armyId: armyId
     }, '军队删除成功');
     
     setCorsHeaders(response);
