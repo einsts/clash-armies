@@ -6,7 +6,7 @@
 	"scripts": {
 		"start:before": "docker compose up -d",
 		"start": "npm run start:before && vite dev",
-		"start:network": "npm run start:before && vite dev --host",
+		"start:network": "npm run start:before && vite dev --host 0.0.0.0",
 		"start:https": "DEV_HTTPS=1 npm run start:network",
 		"production": "vite preview",
 		"build": "vite build",
