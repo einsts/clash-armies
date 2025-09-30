@@ -122,17 +122,7 @@ export class ArmyAPI {
 						'home', au.home,
 						'armyId', a.id,
 						'unitId', un.id,
-						'amount', au.amount,
-						'name', un.name,
-						'type', un.type,
-						'clashId', un.clashId,
-						'housingSpace', un.housingSpace,
-						'productionBuilding', un.productionBuilding,
-						'isSuper', un.isSuper,
-						'isFlying', un.isFlying,
-						'isJumper', un.isJumper,
-						'airTargets', un.airTargets,
-						'groundTargets', un.groundTargets
+						'amount', au.amount
 					)) AS units
 				FROM armies a
 				LEFT JOIN army_units au ON au.armyId = a.id
@@ -146,11 +136,7 @@ export class ArmyAPI {
 					JSON_ARRAYAGG(JSON_OBJECT(
 						'id', ae.id,
 						'armyId', a.id,
-						'equipmentId', eq.id,
-						'hero', eq.hero,
-						'name', eq.name,
-						'clashId', eq.clashId,
-						'epic', eq.epic
+						'equipmentId', eq.id
 					)) AS equipment
 				FROM armies a
 				LEFT JOIN army_equipment ae ON ae.armyId = a.id
@@ -165,9 +151,7 @@ export class ArmyAPI {
 						'id', ap.id,
 						'hero', ap.hero,
 						'armyId', a.id,
-						'petId', p.id,
-						'name', p.name,
-						'clashId', p.clashId
+						'petId', p.id
 					)) AS pets
 				FROM armies a
 				LEFT JOIN army_pets ap ON ap.armyId = a.id
