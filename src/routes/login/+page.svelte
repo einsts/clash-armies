@@ -1,5 +1,6 @@
 <script lang="ts">
 	import GoogleLoginButton from '$components/GoogleLoginButton.svelte';
+	import AppleLoginButton from '$components/AppleLoginButton.svelte';
 </script>
 
 <svelte:head>
@@ -21,6 +22,7 @@
 			</header>
 			<div class="btn-container">
 				<GoogleLoginButton />
+				<AppleLoginButton />
 			</div>
 		</div>
 	</div>
