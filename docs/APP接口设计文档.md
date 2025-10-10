@@ -67,9 +67,10 @@ GET /app/health
 
 ### 2. 用户认证接口
 ```
-POST /app/api/v1/auth/login      # 用户登录（Google ID Token）
-POST /app/api/v1/auth/refresh    # Token刷新
-POST /app/api/v1/auth/logout     # 用户登出
+POST /app/api/v1/auth/login/google  # 用户登录（Google ID Token）
+POST /app/api/v1/auth/login/apple   # 用户登录（Apple Sign In）
+POST /app/api/v1/auth/refresh       # Token刷新
+POST /app/api/v1/auth/logout        # 用户登出
 ```
 
 ### 3. 用户偏好设置接口

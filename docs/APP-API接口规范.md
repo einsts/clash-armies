@@ -72,8 +72,8 @@ APP 端使用 JWT (JSON Web Token) 进行身份认证：
 
 ### 1. 认证相关接口
 
-#### 1.1 用户登录
-**POST** `/auth/login`
+#### 1.1 用户登录（Google）
+**POST** `/auth/login/google`
 
 通过 Google ID Token 进行登录认证。
 
@@ -83,6 +83,20 @@ APP 端使用 JWT (JSON Web Token) 进行身份认证：
   "idToken": "google_id_token_string"
 }
 ```
+#### 1.1.1 用户登录（Apple）
+**POST** `/auth/login/apple`
+
+通过 Apple 授权码（authorizationCode）进行登录认证。
+
+**请求体**:
+```json
+{
+  "authorizationCode": "apple_authorization_code"
+}
+```
+
+**响应**: 与 Google 登录一致，返回 `accessToken`、`refreshToken`、`user`、`expiresIn` 等字段。
+
 
 **响应**:
 ```json

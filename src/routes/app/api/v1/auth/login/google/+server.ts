@@ -82,11 +82,7 @@ export const POST = createApiEndpoint(async (req: RequestEvent) => {
           googleEmail: userInfo.email,
           playerTag: null,
         });
-        
-        await tx.insertOne('user_roles', { 
-          userId: newUserId, 
-          role: 'user' 
-        });
+        await tx.insertOne('user_roles', { userId: newUserId, role: 'user' });
       });
       
       if (!newUserId) {
@@ -157,13 +153,7 @@ export const POST = createApiEndpoint(async (req: RequestEvent) => {
       setCorsHeaders(response, req);
       return response;
     }
-    
-    // 处理其他错误
-    console.error('Google ID Token login error:', error);
-    const response = createErrorResponse(
-      'LOGIN_FAILED',
-      '登录失败，请稍后重试'
-    );
+    const response = createErrorResponse('LOGIN_FAILED', '登录失败，请稍后重试');
     response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate');
     response.headers.set('Pragma', 'no-cache');
     setCorsHeaders(response, req);
@@ -178,3 +168,5 @@ export const OPTIONS = async (req: RequestEvent) => {
   setCorsHeaders(response);
   return response;
 };
+
+
