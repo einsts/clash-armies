@@ -1,6 +1,6 @@
 /**
  * APP 用户登录 - Apple
- * 接收 iOS 端传入的 authorizationCode，通过现有 arctic Apple 客户端换取 id_token，
+ * 接收 iOS 端传入的 idToken（由 Apple Sign in with Apple SDK 提供），
  * 解析用户信息后完成用户创建/查找，并签发 APP 端 JWT（与 Google 登录保持一致）。
  */
 
@@ -14,11 +14,10 @@ import { generateAccessToken, generateRefreshToken } from '$lib/app/middleware/a
 import { db } from '$server/db';
 import { getUserRoles } from '$lib/app/server/users';
 import { initRefreshState } from '$lib/app/server/refreshTokens';
-import { apple } from '$server/auth/lucia';
 
-// 请求体校验：iOS 原生 Sign in with Apple 会提供 authorizationCode
+// 请求体校验：iOS 原生 Sign in with Apple 提供 idToken
 const appleLoginSchema = z.object({
-  authorizationCode: z.string().min(1, 'authorizationCode 不能为空'),
+  idToken: z.string().min(1, 'idToken 不能为空'),
 });
 
 type AppleIdTokenPayload = {
@@ -43,14 +42,11 @@ export const POST = createApiEndpoint(async (req: RequestEvent) => {
 
   try {
     const body = await req.request.json();
-    const { authorizationCode } = appleLoginSchema.parse(body);
-
-    // 使用 arctic Apple 客户端交换 token
-    const tokens = await apple.validateAuthorizationCode(authorizationCode);
-    const idToken = tokens.idToken;
+    const { idToken } = appleLoginSchema.parse(body);
 
     // 从 id_token 解析用户标识（Apple 仅在首次授权可能返回 email）
     const payload = parseJwtPayload<AppleIdTokenPayload>(idToken);
+    
     const appleId = payload.sub;
     const appleEmail = payload.email; // 可能为 undefined
 
@@ -153,6 +149,7 @@ export const POST = createApiEndpoint(async (req: RequestEvent) => {
       setCorsHeaders(resp, req);
       return resp;
     }
+    
     const resp = createErrorResponse('LOGIN_FAILED', 'Apple 登录失败，请稍后重试');
     resp.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate');
     resp.headers.set('Pragma', 'no-cache');
