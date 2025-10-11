@@ -91,7 +91,7 @@ APP 端使用 JWT (JSON Web Token) 进行身份认证：
 **请求体**:
 ```json
 {
-  "authorizationCode": "apple_authorization_code"
+  "idToken": "apple_id_token_string"
 }
 ```
 
