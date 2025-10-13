@@ -182,7 +182,4 @@ export default function migration(runStep: MigrationFn) {
 		const iceBlock = await db.getRow<Unit>('units', { name: 'Ice Block' });
         await db.insertOne('unit_levels', { unitId: iceBlock.id, level: 5, spellFactoryLevel: 7, laboratoryLevel: 15 });
 	});
-
-	
-
 }
