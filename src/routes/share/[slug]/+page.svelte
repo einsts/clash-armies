@@ -53,7 +53,7 @@
 <!-- 直接使用原有的 ViewArmy 组件，但通过 CSS 隐藏登录区块 -->
 <section class="army">
 	<div class="container">
-		<C.ViewArmy {army} />
+		<C.ShareArmy {army} />
 	</div>
 </section>
 
