@@ -161,7 +161,6 @@
 <div class="toolbar">
 
 	<div>
-		<ShareButton {model} size="large" />
 		<OpenInGameButton {model} size="large" />
 		<button class="utility-btn large" aria-label="context-menu" bind:this={menuBtn} onclick={toggleContextMenu}>
 			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 5 16">
@@ -182,11 +181,6 @@
 	</div>
 </div>
 
-<div class="comments-feed" class:has-comments={model.comments.length > 0} id="comments">
-	<CommentsList {model} comments={model.structuredComments} />
-
-	
-</div>
 
 <CtxMenu bind:menuOpen bind:menuBtnRef={menuBtn} {model} hideViewArmyLink />
 
