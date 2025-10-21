@@ -132,7 +132,7 @@ export const POST = createApiEndpoint(async (req: RequestEvent) => {
         appleEmail: appleEmail ?? null,
       },
       expiresIn: {
-        accessToken: 30 * 60,
+        accessToken: 24 * 60 * 60,
         refreshToken: 30 * 24 * 60 * 60,
       },
     }, '登录成功');

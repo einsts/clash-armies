@@ -87,7 +87,7 @@ export const POST = createApiEndpoint(async (req: RequestEvent) => {
       accessToken: newAccessToken,
       refreshToken: newRefreshToken,
       expiresIn: {
-        accessToken: 30 * 60,
+        accessToken: 24 * 60 * 60,
         refreshToken: 30 * 24 * 60 * 60,
       }
     }, '刷新成功');

@@ -118,7 +118,7 @@ export const POST = createApiEndpoint(async (req: RequestEvent) => {
       },
       // APP 不依赖 Web cookie，移除 Lucia/sessionId
       expiresIn: {
-        accessToken: 30 * 60, // 30分钟
+        accessToken: 24 * 60 * 60, // 1天
         refreshToken: 30 * 24 * 60 * 60, // 30天
       }
     }, '登录成功');

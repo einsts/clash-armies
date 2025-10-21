@@ -43,7 +43,7 @@ export function verifyRefreshToken(token: string): RefreshToken | null {
  */
 export function generateAccessToken(payload: Omit<AccessToken, 'exp' | 'iat'> & { jti?: string }): string {
   // 若 payload 已包含 jti，则不再通过 options.jwtid 传入，避免与 payload 冲突
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: '30m' });
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: '1d' });
 }
 
 /**
